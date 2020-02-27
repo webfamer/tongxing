@@ -56,98 +56,72 @@ export const constantRoutes = [
   },
 
   {
-    path: '/example',
+    path: '/customer',
     component: Layout,
-    redirect: '/example/table',
-    name: 'Example',
-    meta: { title: 'Example', icon: 'example' },
     children: [
       {
-        path: 'table',
-        name: 'Table',
-        component: () => import('@/views/table/index'),
-        meta: { title: 'Table', icon: 'table' }
+        path: 'customer',
+        name: 'customer',
+        component: () => import('@/views/customer/index'),
+        meta: { title: '客户管理', icon: 'form' }
+      }
+    ]
+  },
+  {
+    path: '/diagram',
+    component: Layout,
+    children: [
+      {
+        path: 'diagram',
+        name: 'diagram',
+        component: () => import('@/views/diagram/index'),
+        meta: { title: '统计报表', icon: 'form' }
+      }
+    ]
+  },
+  {
+    path: '/systemSet',
+    component: Layout,
+    redirect: '/systemSet/notification',
+    name: 'systemSet',
+    meta: { title: '系统配置', icon: 'tree' },
+    children: [
+      {
+        path: 'notification',
+        name: 'notification',
+        component: () => import('@/views/systemSet/notification/index'),
+        meta: { title: '通知设置', icon: 'table' }
       },
       {
-        path: 'tree',
-        name: 'Tree',
-        component: () => import('@/views/tree/index'),
-        meta: { title: 'Tree', icon: 'tree' }
+        path: 'apiManage',
+        name: 'apiManage',
+        component: () => import('@/views/systemSet/apiManage/index'),
+        meta: { title: 'API管理', icon: 'tree' }
       }
     ]
   },
-
   {
-    path: '/form',
+    path: '/accountManage',
     component: Layout,
+    redirect: '/accountManage/duty',
+    name: 'accountManage',
+    meta: { title: '账户管理', icon: 'tree' },
     children: [
       {
-        path: 'index',
-        name: 'Form',
-        component: () => import('@/views/form/index'),
-        meta: { title: 'Form', icon: 'form' }
-      }
-    ]
-  },
-
-  {
-    path: '/nested',
-    component: Layout,
-    redirect: '/nested/menu1',
-    name: 'Nested',
-    meta: {
-      title: 'Nested',
-      icon: 'nested'
-    },
-    children: [
-      {
-        path: 'menu1',
-        component: () => import('@/views/nested/menu1/index'), // Parent router-view
-        name: 'Menu1',
-        meta: { title: 'Menu1' },
-        children: [
-          {
-            path: 'menu1-1',
-            component: () => import('@/views/nested/menu1/menu1-1'),
-            name: 'Menu1-1',
-            meta: { title: 'Menu1-1' }
-          },
-          {
-            path: 'menu1-2',
-            component: () => import('@/views/nested/menu1/menu1-2'),
-            name: 'Menu1-2',
-            meta: { title: 'Menu1-2' },
-            children: [
-              {
-                path: 'menu1-2-1',
-                component: () => import('@/views/nested/menu1/menu1-2/menu1-2-1'),
-                name: 'Menu1-2-1',
-                meta: { title: 'Menu1-2-1' }
-              },
-              {
-                path: 'menu1-2-2',
-                component: () => import('@/views/nested/menu1/menu1-2/menu1-2-2'),
-                name: 'Menu1-2-2',
-                meta: { title: 'Menu1-2-2' }
-              }
-            ]
-          },
-          {
-            path: 'menu1-3',
-            component: () => import('@/views/nested/menu1/menu1-3'),
-            name: 'Menu1-3',
-            meta: { title: 'Menu1-3' }
-          }
-        ]
+        path: 'duty',
+        name: 'duty',
+        component: () => import('@/views/accountManage/duty/index'),
+        meta: { title: '职务', icon: 'table' }
       },
       {
-        path: 'menu2',
-        component: () => import('@/views/nested/menu2/index'),
-        meta: { title: 'menu2' }
+        path: 'employee',
+        name: 'employee',
+        component: () => import('@/views/accountManage/employee/index'),
+        meta: { title: '员工', icon: 'tree' }
       }
     ]
   },
-
+  
   {
     path: 'external-link',
     component: Layout,
