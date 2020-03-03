@@ -63,7 +63,7 @@ export const constantRoutes = [
         path: 'customer',
         name: 'customer',
         component: () => import('@/views/customer/index'),
-        meta: { title: '客户管理', icon: 'form' }
+        meta: { title: '客户管理', icon: 'personal' }
       }
     ]
   },
@@ -75,7 +75,7 @@ export const constantRoutes = [
         path: 'diagram',
         name: 'diagram',
         component: () => import('@/views/diagram/index'),
-        meta: { title: '统计报表', icon: 'form' }
+        meta: { title: '统计报表', icon: 'diagram' }
       }
     ]
   },
@@ -84,7 +84,7 @@ export const constantRoutes = [
     component: Layout,
     redirect: '/systemSet/notification',
     name: 'systemSet',
-    meta: { title: '系统配置', icon: 'tree' },
+    meta: { title: '系统配置', icon: 'setting' },
     children: [
       {
         path: 'notification',
@@ -105,7 +105,7 @@ export const constantRoutes = [
     component: Layout,
     redirect: '/accountManage/duty',
     name: 'accountManage',
-    meta: { title: '账户管理', icon: 'tree' },
+    meta: { title: '账户管理', icon: 'team' },
     children: [
       {
         path: 'duty',
