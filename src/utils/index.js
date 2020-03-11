@@ -105,3 +105,9 @@ export function param2Obj(url) {
       '"}'
   )
 }
+
+
+export function resetDataAttr(vm,key){
+  vm[key] = vm.$options.data()[key]
+
+}
