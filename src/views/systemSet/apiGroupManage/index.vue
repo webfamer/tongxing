@@ -1,43 +1,32 @@
 <template>
-  <div class="customer">
+  <div class="apiManage">
     <el-card class="search-box" shadow="hover">
-      <el-row :gutter="20">
-        <el-col :span="3" :offset="1">
-          <div class="block">
-            <el-input v-model="input" placeholder="请输入职务名称"></el-input>
-          </div>
-        </el-col>
-        <el-col :span="4" :offset="1" :lg="6" :md="8">
-          <el-button type="primary" icon="el-icon-search">查询</el-button>
-          <el-button type="primary" icon="el-icon-refresh-right">重置</el-button>
-        </el-col>
-      </el-row>
+    <p class="title">
+          <i class="el-icon-menu"></i>API组服务管理
+        </p>
     </el-card>
 
     <div class="content-box">
       <el-card shadow="never">
         <div slot="header" class="clearfix">
-          <el-button type="primary" icon="el-icon-plus" @click="add">新增职务</el-button>
+          <el-button type="primary" icon="el-icon-plus" @click="add">添加</el-button>
         </div>
         <el-table
           :data="tableData"
           style="width: 100%"
+          border
           :default-sort="{ prop: 'date', order: 'descending' }"
         >
-          <el-table-column prop="date" label="日期" sortable width="180"></el-table-column>
-          <el-table-column prop="name" label="姓名" sortable width="180"></el-table-column>
-          <el-table-column prop="address" label="地址" :formatter="formatter"></el-table-column>
-          <el-table-column fixed="right" label="操作" width="400">
-            <template slot-scope="scope">
-              <el-button @click="add(scope.row)" type="text" icon="el-icon-circle-plus" size="small">添加人员</el-button>
-               <el-button @click="edit(scope.row)" type="text" icon="el-icon-edit" size="small">编辑职务</el-button>
-                <el-button  type="text" icon="el-icon-s-tools" size="small">设置权限</el-button>
-              <el-button
-                @click="delDuty(scope.row)"
-                type="text"
-                icon="el-icon-delete-solid"
-                size="small"
-              >删除职务</el-button>
+          <el-table-column prop="date" label="API服务名称"  width="180"></el-table-column>
+          <el-table-column prop="name" label="上架状态"  width="180"></el-table-column>
+          <el-table-column prop="address" label="API路径" :formatter="formatter"></el-table-column>
+          <el-table-column prop="address" label="每日请求上限/客户" :formatter="formatter"></el-table-column>
+          <el-table-column prop="address" label="描述" :formatter="formatter"></el-table-column>
+          <el-table-column prop="address" label="修改时间"  sortable :formatter="formatter"></el-table-column>
+          <el-table-column  label="操作" width="150" >
+            <template slot-scope="scope" >
+              <el-button @click="delApiinterface()" type="text" icon="el-icon-edit" size="small">下架</el-button>
+              <el-button  type="text" icon="el-icon-s-shop" size="small" @click="goApiGroupSet(scope.row)">配置</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -55,12 +44,10 @@
       </el-card>
     </div>
     <Detail ref="detail"></Detail>
-    <AddPeople ref="addPeople"></AddPeople>
   </div>
 </template>
 <script>
 import Detail from "./Detail";
-import AddPeople from './AddPeople'
 export default {
   data() {
     return {
@@ -121,13 +108,36 @@ export default {
     edit() {
       this.$refs.detail.openDialog();
     },
-
     add() {
-     this.$refs.addPeople.openDialog();
+      this.$refs.detail.openDialog();
     },
-    delDuty() {
+      delApiinterface() {
       this.$confirm(
-        "<strong>是否删除职务?</strong><br>删除职务前需清空该职务下所有员工",
+        "<strong>是否确定下架API服务?</strong><br>下架后会导致10个客户无法使用该服务",
+        "确认提示",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          dangerouslyUseHTMLString: true,
+          type: "warning"
+        }
+      )
+        .then(() => {
+          this.$message({
+            type: "success",
+            message: "删除成功!"
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除"
+          });
+        });
+    },
+    openCustomer() {
+      this.$confirm(
+        "<strong>是否确定启用客户?</strong><br>启用后恢复服务的使用",
         "确认提示",
         {
           confirmButtonText: "确定",
@@ -151,12 +161,19 @@ export default {
     }
   },
   components: {
-    Detail,AddPeople
+    Detail
   }
 };
 </script>
 <style lang="scss" scoped>
-.customer {
+.apiManage {
+  .search-box{
+      .title {
+      color: #666666;
+      font-size: 20px;
+      padding-left: 20px;
+    }
+  }
   .content-box {
     margin: 30px;
     box-sizing: border-box;

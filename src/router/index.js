@@ -63,7 +63,37 @@ export const constantRoutes = [
         path: 'customer',
         name: 'customer',
         component: () => import('@/views/customer/index'),
-        meta: { title: '客户管理', icon: 'form' }
+        meta: { title: '客户管理', icon: 'personal' }
+      },
+      {
+        path: '/appset',
+        name: 'appset',
+        component: () => import('@/views/customerApp/Appset.vue'),
+        meta: { title: '商户详情页', icon: 'personal' },
+        hidden:true,
+        children:[{
+          path: '/appset/appservice',
+          name: 'appservice',
+          component: () => import('@/views/customerApp/Appservice.vue'),
+          meta: { title: 'app服务', icon: 'personal' },
+          hidden:true,
+        },
+        {
+          path: '/appset/appitem',
+          name: 'appitem',
+          component: () => import('@/views/customerApp/Appitem.vue'),
+          meta: { title: 'app服务', icon: 'personal' },
+          hidden:true,
+        },
+        {
+          path: '/appset/appoprate',
+          name: 'appoprate',
+          component: () => import('@/views/customerApp/Appoprate.vue'),
+          meta: { title: 'app服务', icon: 'personal' },
+          hidden:true,
+        }
+      
+      ]
       }
     ]
   },
@@ -75,7 +105,7 @@ export const constantRoutes = [
         path: 'diagram',
         name: 'diagram',
         component: () => import('@/views/diagram/index'),
-        meta: { title: '统计报表', icon: 'form' }
+        meta: { title: '统计报表', icon: 'diagram' }
       }
     ]
   },
@@ -84,7 +114,7 @@ export const constantRoutes = [
     component: Layout,
     redirect: '/systemSet/notification',
     name: 'systemSet',
-    meta: { title: '系统配置', icon: 'tree' },
+    meta: { title: '系统配置', icon: 'setting' },
     children: [
       {
         path: 'notification',
@@ -97,6 +127,19 @@ export const constantRoutes = [
         name: 'apiManage',
         component: () => import('@/views/systemSet/apiManage/index'),
         meta: { title: 'API管理', icon: 'tree' }
+      },
+      {
+        path: 'apiGroupManage',
+        name: 'apiGroupManage',
+        component: () => import('@/views/systemSet/apiGroupManage/index'),
+        meta: { title: 'API组管理', icon: 'tree' },
+        children:[{
+          path: '/apiGroupSet',
+          name: 'apiGroupSet',
+          component: () => import('@/views/systemSet/apiGroupManage/ApiGroupSet.vue'),
+          meta: { title: 'api组管理', icon: 'personal' },
+          hidden:true,
+        }]
       }
     ]
   },
@@ -105,7 +148,7 @@ export const constantRoutes = [
     component: Layout,
     redirect: '/accountManage/duty',
     name: 'accountManage',
-    meta: { title: '账户管理', icon: 'tree' },
+    meta: { title: '账户管理', icon: 'team' },
     children: [
       {
         path: 'duty',
