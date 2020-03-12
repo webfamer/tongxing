@@ -33,7 +33,7 @@
       </el-form-item>
     </el-form>
     <span slot="footer" class="dialog-footer">
-      <el-button type="primary" @click="dialogVisible = false" icon="el-icon-check">提交</el-button>
+      <el-button type="primary" @click="saveForm" icon="el-icon-check">提交</el-button>
       <el-button @click="dialogVisible = false" icon="el-icon-refresh-right">重置</el-button>
     </span>
   </el-dialog>
@@ -94,6 +94,11 @@ export default {
       }
       console.log(newarr, "saveNode");
       this.$refs.tree.setCheckedNodes(newarr);
+    },
+    saveForm(){
+      customerApiList.getApi({
+        
+      })
     }
   }
 };
