@@ -132,14 +132,7 @@ export const constantRoutes = [
         path: 'apiGroupManage',
         name: 'apiGroupManage',
         component: () => import('@/views/systemSet/apiGroupManage/index'),
-        meta: { title: 'API组管理', icon: 'tree' },
-        children:[{
-          path: '/apiGroupSet',
-          name: 'apiGroupSet',
-          component: () => import('@/views/systemSet/apiGroupManage/ApiGroupSet.vue'),
-          meta: { title: 'api组管理', icon: 'personal' },
-          hidden:true,
-        }]
+        meta: { title: 'API组管理', icon: 'tree' }
       }
     ]
   },

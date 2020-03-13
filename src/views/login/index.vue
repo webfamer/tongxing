@@ -1,9 +1,12 @@
 <template>
   <div class="login-container">
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
-
       <div class="title-container">
-        <h3 class="title">Login Form</h3>
+        <div class="logo">
+      <img src="../../assets/img/logo.png" alt="" >
+        </div>
+        <h3 class="title">同兴科技运营中台</h3>
+        <p class="e-name">Customer Relationship Management</p>
       </div>
 
       <el-form-item prop="username">
@@ -132,8 +135,8 @@ export default {
 /* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
 
 $bg:#283443;
-$light_gray:#fff;
-$cursor: #fff;
+$light_gray:rgb(77, 73, 73);
+$cursor: #000;
 
 @supports (-webkit-mask: none) and (not (cater-color: $cursor)) {
   .login-container .el-input input {
@@ -143,6 +146,15 @@ $cursor: #fff;
 
 /* reset element-ui css */
 .login-container {
+  .logo{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    img{
+      width: 150px;
+      margin-bottom: 40px;
+    }
+  }
   .el-input {
     display: inline-block;
     height: 47px;
@@ -177,21 +189,23 @@ $cursor: #fff;
 <style lang="scss" scoped>
 $bg:#2d3a4b;
 $dark_gray:#889aa4;
-$light_gray:#eee;
+$light_gray:#0079FE;
 
 .login-container {
   min-height: 100%;
   width: 100%;
-  background-color: $bg;
+  // background-color: $bg;
+  background: url('../../assets/img/bg.png');
   overflow: hidden;
 
   .login-form {
     position: relative;
     width: 520px;
     max-width: 100%;
-    padding: 160px 35px 0;
-    margin: 0 auto;
+    padding: 60px 35px 0;
+    margin: 200px auto;
     overflow: hidden;
+    background: #fff;
   }
 
   .tips {
@@ -218,11 +232,17 @@ $light_gray:#eee;
     position: relative;
 
     .title {
-      font-size: 26px;
+      font-size: 38px;
       color: $light_gray;
-      margin: 0px auto 40px auto;
+      margin: 0px auto 0px auto;
       text-align: center;
       font-weight: bold;
+    }
+    .e-name{
+      font-size: 20px;
+       margin: 10px auto 40px auto;
+      text-align: center;
+       color: $light_gray;
     }
   }
 

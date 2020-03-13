@@ -1,9 +1,9 @@
 <template>
   <div class="apiManage">
     <el-card class="search-box" shadow="hover">
-    <p class="title">
-          <i class="el-icon-menu"></i>API服务管理
-        </p>
+      <p class="title">
+        <i class="el-icon-menu"></i>API服务管理
+      </p>
     </el-card>
 
     <div class="content-box">
@@ -17,37 +17,48 @@
           border
           :default-sort="{ prop: 'date', order: 'descending' }"
         >
-          <el-table-column prop="apiChiName" label="API服务名称"  width="180"></el-table-column>
-          <el-table-column prop="status" label="上架状态"  width="180"></el-table-column>
-          <el-table-column prop="apiPath" label="API路径" ></el-table-column>
-          <el-table-column prop="remark" label="描述" ></el-table-column>
-          <el-table-column prop="gmtModified" label="修改时间"  sortable ></el-table-column>
-          <el-table-column  label="操作" width="150" >
-            <template slot-scope="scope" >
-              <el-button @click="delApiinterface(scope.row)" type="text" icon="el-icon-edit" size="small">下架</el-button>
+          <el-table-column prop="apiChiName" label="API服务名称" width="180"></el-table-column>
+          <el-table-column prop="status" label="上架状态" width="180"></el-table-column>
+          <el-table-column prop="apiPath" label="API路径"></el-table-column>
+          <el-table-column prop="remark" label="描述"></el-table-column>
+          <el-table-column prop="gmtModified" label="修改时间" sortable></el-table-column>
+          <el-table-column label="操作" width="150">
+            <template slot-scope="scope">
+              <el-button
+                @click="deleteApi(scope.row)"
+                type="text"
+                icon="el-icon-edit"
+                size="small"
+              >下架</el-button>
+              <el-button
+                @click="edit(scope.row)"
+                type="text"
+                icon="el-icon-s-cooperation"
+                size="small"
+              >配置</el-button>
             </template>
           </el-table-column>
         </el-table>
         <div class="block" style="float:right; margin-top:30px;margin-bottom:30px;">
-        <Pagination
-          :page="page"
-          @sizeChange="handleSizeChange"
-          @currentChange="handleCurrentChange"
-        ></Pagination>
+          <Pagination
+            :page="page"
+            @sizeChange="handleSizeChange"
+            @currentChange="handleCurrentChange"
+          ></Pagination>
         </div>
       </el-card>
     </div>
-    <Detail ref="detail"></Detail>
+    <Detail ref="detail" @getList="getCustomerList"></Detail>
   </div>
 </template>
 <script>
 import Detail from "./Detail";
-import customerApiList from '@/api/customerApi'
+import customerApiList from "@/api/customerApi";
 import PageMixins from "@/mixins/pageMixins";
 import Pagination from "@/components/Pagination/index";
-import {resetDataAttr} from '@/utils/index.js'
+import { resetDataAttr } from "@/utils/index.js";
 export default {
-    mixins:[PageMixins],
+  mixins: [PageMixins],
   data() {
     return {
       input: "",
@@ -57,47 +68,72 @@ export default {
     };
   },
   methods: {
-    edit() {
-      this.$refs.detail.openDialog();
+    edit(data) {
+      this.$refs.detail.openDialog(data);
     },
     add() {
       this.$refs.detail.openDialog();
     },
-    handleSizeChange(v){
-        this.page.limit = v;
-        this.getCustomerList();
+    handleSizeChange(v) {
+      this.page.limit = v;
+      this.getCustomerList();
     },
-    handleCurrentChange(v){
+    handleCurrentChange(v) {
       this.page.start = v;
-        this.getCustomerList();
+      this.getCustomerList();
     },
-     getCustomerList() {
+    getCustomerList() {
       console.log(122121);
-      customerApiList.getApi({api:{
-      },
-      pageVo:{
-        pageNum:this.page.start,
-        pageSize:this.page.limit
-      }
-      }).then(res => {
-        this.tableData = res.data.apiList;
-        this.page.total=res.data.totalPage;
-        this.page.start = res.data.currentPage;
-      });
+      customerApiList
+        .getApi({
+          api: {},
+          pageVo: {
+            pageNum: this.page.start,
+            pageSize: this.page.limit
+          }
+        })
+        .then(res => {
+          this.tableData = res.data.apiList;
+          this.page.total = res.data.totalPage;
+          this.page.start = res.data.currentPage;
+        });
     },
+    deleteApi(row) {
+      console.log(row);
+      customerApiList
+        .delApi({
+          api: {
+            id: row.id,
+            status: row.status
+          }
+        })
+        .then(res => {
+          if (res.code === 0) {
+            this.dialogVisible = false;
+            this.getCustomerList();
+            this.$message({
+              message: "删除成功",
+              type: "success"
+            });
+          } else {
+            this.$message.error("删除失败");
+          }
+        });
+    }
   },
-  created(){
-  this.getCustomerList();
+  created() {
+    this.getCustomerList();
   },
   components: {
-    Detail,Pagination
+    Detail,
+    Pagination
   }
 };
 </script>
 <style lang="scss" scoped>
 .apiManage {
-  .search-box{
-      .title {
+  .search-box {
+    .title {
       color: #666666;
       font-size: 20px;
       padding-left: 20px;

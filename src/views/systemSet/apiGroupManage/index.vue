@@ -17,96 +17,47 @@
           border
           :default-sort="{ prop: 'date', order: 'descending' }"
         >
-          <el-table-column prop="date" label="API服务名称"  width="180"></el-table-column>
-          <el-table-column prop="name" label="上架状态"  width="180"></el-table-column>
-          <el-table-column prop="address" label="API路径" :formatter="formatter"></el-table-column>
-          <el-table-column prop="address" label="每日请求上限/客户" :formatter="formatter"></el-table-column>
-          <el-table-column prop="address" label="描述" :formatter="formatter"></el-table-column>
-          <el-table-column prop="address" label="修改时间"  sortable :formatter="formatter"></el-table-column>
+          <el-table-column prop="groupChiName" label="API分组名称"  width="180"></el-table-column>
+          <el-table-column prop="apiCount" label="包含API数"  width="180"></el-table-column>
+          <el-table-column prop="description" label="描述" ></el-table-column>
+          <el-table-column prop="gmtModified" label="修改时间" ></el-table-column>
           <el-table-column  label="操作" width="150" >
             <template slot-scope="scope" >
-              <el-button @click="delApiinterface()" type="text" icon="el-icon-edit" size="small">下架</el-button>
-              <el-button  type="text" icon="el-icon-s-shop" size="small" @click="goApiGroupSet(scope.row)">配置</el-button>
+              <el-button  type="text" icon="el-icon-s-shop" size="small" @click="edit(scope.row)">配置</el-button>
             </template>
           </el-table-column>
         </el-table>
         <div class="block" style="float:right; margin-top:30px;margin-bottom:30px;">
-          <el-pagination
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            :current-page.sync="currentPage2"
-            :page-sizes="[100, 200, 300, 400]"
-            :page-size="100"
-            layout="sizes, prev, pager, next"
-            :total="1000"
-          ></el-pagination>
+         <Pagination
+          :page="page"
+          @sizeChange="handleSizeChange"
+          @currentChange="handleCurrentChange"
+        ></Pagination>
         </div>
       </el-card>
     </div>
-    <Detail ref="detail"></Detail>
+    <Detail ref="detail" @getList="getCustomerGroup"></Detail>
   </div>
 </template>
 <script>
 import Detail from "./Detail";
+import customerApiGroup from '@/api/customerGroupApi'
+import PageMixins from "@/mixins/pageMixins";
+import Pagination from "@/components/Pagination/index";
+import {resetDataAttr} from '@/utils/index.js'
 export default {
+     mixins:[PageMixins],
   data() {
     return {
       input: "",
       value1: "",
-      tableData: [
-        {
-          date: "2016-05-02",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄"
-        },
-        {
-          date: "2016-05-04",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1517 弄"
-        },
-        {
-          date: "2016-05-01",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1519 弄"
-        },
-        {
-          date: "2016-05-03",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1516 弄"
-        }
-      ],
-      options: [
-        {
-          value: "选项1",
-          label: "黄金糕"
-        },
-        {
-          value: "选项2",
-          label: "双皮奶"
-        },
-        {
-          value: "选项3",
-          label: "蚵仔煎"
-        },
-        {
-          value: "选项4",
-          label: "龙须面"
-        },
-        {
-          value: "选项5",
-          label: "北京烤鸭"
-        }
-      ],
+      tableData: [],
       value: ""
     };
   },
   methods: {
-    formatter(row, column) {
-      //表格排序
-      return row.address;
-    },
-    edit() {
-      this.$refs.detail.openDialog();
+    edit(data) {
+      this.$refs.detail.openDialog(data);
     },
     add() {
       this.$refs.detail.openDialog();
@@ -135,33 +86,33 @@ export default {
           });
         });
     },
-    openCustomer() {
-      this.$confirm(
-        "<strong>是否确定启用客户?</strong><br>启用后恢复服务的使用",
-        "确认提示",
-        {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          dangerouslyUseHTMLString: true,
-          type: "warning"
-        }
-      )
-        .then(() => {
-          this.$message({
-            type: "success",
-            message: "删除成功!"
-          });
-        })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消删除"
-          });
-        });
-    }
+     handleSizeChange(v){
+        this.page.limit = v;
+        this.getCustomerGroup();
+    },
+    handleCurrentChange(v){
+      this.page.start = v;
+        this.getCustomerGroup();
+    },
+       getCustomerGroup() {
+      console.log(122121);
+      customerApiGroup.getApiGroup({
+      pageVo:{
+        pageNum:this.page.start,
+        pageSize:this.page.limit
+      }
+      }).then(res => {
+        this.tableData = res.data.groupList;
+        this.page.total=res.data.totalPage;
+        this.page.start = res.data.currentPage;
+      });
+    },
+  },
+  created(){
+this.getCustomerGroup()
   },
   components: {
-    Detail
+    Detail,Pagination
   }
 };
 </script>

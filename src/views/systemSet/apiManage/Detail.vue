@@ -34,7 +34,7 @@
     </el-form>
     <span slot="footer" class="dialog-footer">
       <el-button type="primary" @click="saveForm" icon="el-icon-check">提交</el-button>
-      <el-button @click="dialogVisible = false" icon="el-icon-refresh-right">重置</el-button>
+      <el-button @click="resetform" icon="el-icon-refresh-right">重置</el-button>
     </span>
   </el-dialog>
 </template>
@@ -59,16 +59,23 @@ export default {
         })
         .catch(_ => {});
     },
-    openDialog() {
-      this.dialogVisible = true;
+    openDialog(data) {
        resetDataAttr(this, "form");
+      if(data){
+        this.form = data
+      }
+      this.dialogVisible = true;
       this.getTreeNode();
+      console.log(this.form,'this.form')
     },
       getTreeNode() {
         console.log(123)
       customerApiList.getSetApiTree().then(res => {
         this.treeData = res.data;
       });
+    },
+    resetform(){
+        resetDataAttr(this,'form')
     },
      handleCheckChange() {
       let treeNode = this.$refs.tree.getCheckedNodes(true, true);
@@ -96,8 +103,22 @@ export default {
       this.$refs.tree.setCheckedNodes(newarr);
     },
     saveForm(){
-      customerApiList.getApi({
-        
+      customerApiList.addApi({
+        api:{
+          ...this.form,
+          groupId:this.$refs.tree.getCheckedKeys
+        }
+      }).then(res=>{
+             if (res.code === 0) {
+            this.dialogVisible = false;
+            this.$message({
+              message: "保存成功",
+              type: "success"
+            });
+            this.$emit("getList");
+          } else {
+            this.$message.error("保存失败");
+          }
       })
     }
   }
