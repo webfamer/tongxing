@@ -32,12 +32,14 @@ const actions = {
   login({ commit }, userInfo) {
     const { username, password } = userInfo
     return new Promise((resolve, reject) => {
-      login({ username: username.trim(), password: password }).then(response => {
+      login({ username: username, password: password,grant_type:'password',scope:'all',client_id:username,client_secret:password }).then(
+        response => {
         const { data } = response
-        commit('SET_TOKEN', data.token)
-        setToken(data.token)
+        commit('SET_TOKEN', data.access_token)
+        setToken(data.access_token)
         resolve()
-      }).catch(error => {
+      }
+      ).catch(error => {
         reject(error)
       })
     })

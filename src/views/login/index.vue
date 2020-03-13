@@ -1,9 +1,16 @@
 <template>
   <div class="login-container">
-    <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
+    <el-form
+      ref="loginForm"
+      :model="loginForm"
+      :rules="loginRules"
+      class="login-form"
+      auto-complete="on"
+      label-position="left"
+    >
       <div class="title-container">
         <div class="logo">
-      <img src="../../assets/img/logo.png" alt="" >
+          <img src="../../assets/img/logo.png" alt />
         </div>
         <h3 class="title">同兴科技运营中台</h3>
         <p class="e-name">Customer Relationship Management</p>
@@ -44,73 +51,93 @@
         </span>
       </el-form-item>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
+      <el-button
+        :loading="loading"
+        type="primary"
+        style="width:100%;margin-bottom:30px;"
+        @click.native.prevent="handleLogin"
+      >Login</el-button>
 
       <div class="tips">
         <span style="margin-right:20px;">username: admin</span>
-        <span> password: any</span>
+        <span>password: any</span>
       </div>
-
     </el-form>
   </div>
 </template>
 
 <script>
-import { validUsername } from '@/utils/validate'
-
+import { validUsername } from "@/utils/validate";
+import loginApi from "@/api/user";
 export default {
-  name: 'Login',
+  name: "Login",
   data() {
     const validateUsername = (rule, value, callback) => {
       if (!validUsername(value)) {
-        callback(new Error('Please enter the correct user name'))
+        callback(new Error("Please enter the correct user name"));
       } else {
-        callback()
+        callback();
       }
-    }
+    };
     const validatePassword = (rule, value, callback) => {
       if (value.length < 6) {
-        callback(new Error('The password can not be less than 6 digits'))
+        callback(new Error("The password can not be less than 6 digits"));
       } else {
-        callback()
+        callback();
       }
-    }
+    };
     return {
       loginForm: {
-        username: 'admin',
-        password: '111111'
+        username: "admin",
+        password: "123456"
       },
       loginRules: {
-        username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-        password: [{ required: true, trigger: 'blur', validator: validatePassword }]
+        username: [
+          { required: true, trigger: "blur", validator: validateUsername }
+        ],
+        password: [
+          { required: true, trigger: "blur", validator: validatePassword }
+        ]
       },
       loading: false,
-      passwordType: 'password',
+      passwordType: "password",
       redirect: undefined
-    }
+    };
   },
   watch: {
     $route: {
       handler: function(route) {
-        this.redirect = route.query && route.query.redirect
+        this.redirect = route.query && route.query.redirect;
       },
       immediate: true
     }
   },
   methods: {
     showPwd() {
-      if (this.passwordType === 'password') {
-        this.passwordType = ''
+      if (this.passwordType === "password") {
+        this.passwordType = "";
       } else {
-        this.passwordType = 'password'
+        this.passwordType = "password";
       }
       this.$nextTick(() => {
-        this.$refs.password.focus()
-      })
+        this.$refs.password.focus();
+      });
     },
     handleLogin() {
-      console.log(111)
-      this.$router.push('/')
+      const { username, password } = this.loginForm;
+      loginApi
+        .login({
+          username: username,
+          password: password,
+          grant_type: "password",
+          scope: "all",
+          client_id: username,
+          client_secret: password
+        })
+        .then(res => {
+          localStorage.setItem("token", res.access_token);
+        });
+
       // this.$refs.loginForm.validate(valid => {
       //   if (valid) {
       //     this.loading = true
@@ -127,15 +154,15 @@ export default {
       // })
     }
   }
-}
+};
 </script>
 
 <style lang="scss">
 /* 修复input 背景不协调 和光标变色 */
 /* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
 
-$bg:#283443;
-$light_gray:rgb(77, 73, 73);
+$bg: #283443;
+$light_gray: rgb(77, 73, 73);
 $cursor: #000;
 
 @supports (-webkit-mask: none) and (not (cater-color: $cursor)) {
@@ -146,12 +173,14 @@ $cursor: #000;
 
 /* reset element-ui css */
 .login-container {
-  .logo{
+  .logo {
     width: 100%;
+    height: 150px;
     display: flex;
     justify-content: center;
-    img{
-      width: 150px;
+    img {
+      width: 139px;
+      height: 125px;
       margin-bottom: 40px;
     }
   }
@@ -187,15 +216,15 @@ $cursor: #000;
 </style>
 
 <style lang="scss" scoped>
-$bg:#2d3a4b;
-$dark_gray:#889aa4;
-$light_gray:#0079FE;
+$bg: #2d3a4b;
+$dark_gray: #889aa4;
+$light_gray: #0079fe;
 
 .login-container {
   min-height: 100%;
   width: 100%;
   // background-color: $bg;
-  background: url('../../assets/img/bg.png');
+  background: url("../../assets/img/bg.png");
   overflow: hidden;
 
   .login-form {
@@ -238,11 +267,11 @@ $light_gray:#0079FE;
       text-align: center;
       font-weight: bold;
     }
-    .e-name{
+    .e-name {
       font-size: 20px;
-       margin: 10px auto 40px auto;
+      margin: 10px auto 40px auto;
       text-align: center;
-       color: $light_gray;
+      color: $light_gray;
     }
   }
 
