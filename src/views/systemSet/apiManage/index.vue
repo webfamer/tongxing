@@ -102,10 +102,8 @@ export default {
       console.log(row);
       customerApiList
         .delApi({
-          api: {
             id: row.id,
-            status: row.status
-          }
+            status: 99
         })
         .then(res => {
           if (res.code === 0) {

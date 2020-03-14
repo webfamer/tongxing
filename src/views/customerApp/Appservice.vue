@@ -25,9 +25,8 @@ export default {
     getapiList() {
       customerApi
         .getCustomerApi({
-          merhcant: {
+
             merchantId: this.userdata.id
-          }
         })
         .then(res => {
           this.tableData = res.data

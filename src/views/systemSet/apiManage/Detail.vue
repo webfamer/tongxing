@@ -104,10 +104,8 @@ export default {
     },
     saveForm(){
       customerApiList.addApi({
-        api:{
           ...this.form,
           groupId:this.$refs.tree.getCheckedKeys
-        }
       }).then(res=>{
              if (res.code === 0) {
             this.dialogVisible = false;

@@ -23,6 +23,12 @@
           <el-table-column prop="gmtModified" label="修改时间" ></el-table-column>
           <el-table-column  label="操作" width="150" >
             <template slot-scope="scope" >
+                <el-button
+                @click="deleteApiGroup(scope.row)"
+                type="text"
+                icon="el-icon-edit"
+                size="small"
+              >删除</el-button>
               <el-button  type="text" icon="el-icon-s-shop" size="small" @click="edit(scope.row)">配置</el-button>
             </template>
           </el-table-column>
@@ -62,28 +68,23 @@ export default {
     add() {
       this.$refs.detail.openDialog();
     },
-      delApiinterface() {
-      this.$confirm(
-        "<strong>是否确定下架API服务?</strong><br>下架后会导致10个客户无法使用该服务",
-        "确认提示",
-        {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          dangerouslyUseHTMLString: true,
-          type: "warning"
-        }
-      )
-        .then(() => {
-          this.$message({
-            type: "success",
-            message: "删除成功!"
-          });
+    deleteApiGroup(row) {
+      customerApiGroup
+        .delApiGroup({
+            groupId: row.id,
+            status: 99
         })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消删除"
-          });
+        .then(res => {
+          if (res.code === 0) {
+            this.dialogVisible = false;
+            this.getCustomerList();
+            this.$message({
+              message: "删除成功",
+              type: "success"
+            });
+          } else {
+            this.$message.error("删除失败");
+          }
         });
     },
      handleSizeChange(v){
