@@ -7,6 +7,9 @@
       <el-form-item label="客户英文名称">
         <el-input v-model="form.merchantEngName"></el-input>
       </el-form-item>
+       <el-form-item label="客户描述">
+        <el-input v-model="form.description"></el-input>
+      </el-form-item>
       <el-form-item label="首联系人">
         <el-input v-model="form.follower"></el-input>
       </el-form-item>
@@ -28,9 +31,9 @@
   <div slot="tip" class="el-upload__tip">支持格式：.JGP .PNG 单个文件不能超过20MB</div>
 </el-upload>
       </el-form-item>-->
-      <el-form-item label="负责人员">
+      <!-- <el-form-item label="负责人员">
         <el-input v-model="form.username" suffix-icon="el-icon-user-solid"></el-input>
-      </el-form-item>
+      </el-form-item> -->
       <!-- <el-form-item label="接收邮件通知">
      <el-checkbox v-model="checked">邮件通知</el-checkbox>
       <el-input v-model="form.name" placeholder="请输入邮箱，多个邮箱请用；隔开，最多5个"></el-input>
@@ -66,9 +69,7 @@ export default {
       console.log(this.$options.data(), "this.$options.data");
       if (id) {
         CustomerApi.getCustomerDetail({
-          merchant: {
-            id
-          }
+            merchantId:id
         }).then(res => {
           if (res.code === 0) {
             this.form = res.data;
@@ -81,10 +82,8 @@ export default {
       console.log(this.form, "hahah");
       if (this.form.id) {
         CustomerApi.eidtCustomer({
-          merchant: {
-            id: row.id,
+            merchantId: this.form.id,
             ...this.form
-          }
         }).then(res => {
           console.log(res);
           if (res.code === 0) {
@@ -100,10 +99,7 @@ export default {
         });
       } else {
         CustomerApi.addCustomer({
-          merchant: {
             ...this.form,
-            status: 1
-          }
         }).then(res => {
           if (res.code === 0) {
             this.dialogVisible = false;

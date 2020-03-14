@@ -11,14 +11,14 @@ function addCustomer(data) {
 
 function delCustomer(data) {
     return request({
-      url: '/merchant/delete',
+      url: '/operation/merchant/delete',
       method: 'post',
       data:{...data,username:store.state.userInfo.username}
     })
 }
 function eidtCustomer(data) {
     return request({
-      url: '/merchant/modify',
+      url: '/operation/merchant/modify',
       method: 'post',
       data:{...data,username:store.state.userInfo.username}
     })

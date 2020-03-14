@@ -104,10 +104,9 @@ export default {
     saveForm() {
       customerApiGroup
         .addApiGroup({
-          group: {
             ...this.form,
             groupId: this.$refs.tree.getCheckedKeys
-          }
+      
         })
         .then(res => {
           if (res.code === 0) {

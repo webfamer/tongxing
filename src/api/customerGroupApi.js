@@ -12,7 +12,7 @@ function addApiGroup(data) {
 
 function delApiGroup(data) {
     return request({
-      url: '/gropu/delete',
+      url: '/group/delete',
       method: 'get',
       data:{...data,username:store.state.userInfo.username}
     })
