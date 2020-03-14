@@ -2,9 +2,8 @@
 import request from '@/api/request'
 import store from '@/store/index'
 function addCustomer(data) {
-  console.log(store)
     return request({
-      url: '/merchant/add',
+      url: '/operation/merchant/add',
       method: 'post',
       data:{...data,username:store.state.userInfo.username}
     })
@@ -34,7 +33,7 @@ function getCustomer(data) {
 
 function getCustomerDetail(data){
   return request({
-    url: 'merchant/detail',
+    url: '/operation/merchant/detail',
     method: 'post',
     data:{...data,username:store.state.userInfo.username}
   })

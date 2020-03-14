@@ -1,10 +1,5 @@
 <template>
-  <el-dialog
-    title="添加客户"
-    :visible.sync="dialogVisible"
-    width="30%"
-    :before-close="handleClose"
-  >
+  <el-dialog title="添加客户" :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
     <el-form ref="form" :model="form" label-width="120px">
       <el-form-item label="客户中文名称">
         <el-input v-model="form.merchantChiName"></el-input>
@@ -32,17 +27,14 @@
   <el-button plain class="el-icon-box">选择附件</el-button>
   <div slot="tip" class="el-upload__tip">支持格式：.JGP .PNG 单个文件不能超过20MB</div>
 </el-upload>
-  </el-form-item> -->
+      </el-form-item>-->
       <el-form-item label="负责人员">
-        <el-input
-          v-model="form.username"
-          suffix-icon="el-icon-user-solid"
-        ></el-input>
+        <el-input v-model="form.username" suffix-icon="el-icon-user-solid"></el-input>
       </el-form-item>
       <!-- <el-form-item label="接收邮件通知">
      <el-checkbox v-model="checked">邮件通知</el-checkbox>
       <el-input v-model="form.name" placeholder="请输入邮箱，多个邮箱请用；隔开，最多5个"></el-input>
-  </el-form-item> -->
+      </el-form-item>-->
     </el-form>
     <span slot="footer" class="dialog-footer">
       <el-button @click="dialogVisible = false">取 消</el-button>
@@ -53,7 +45,7 @@
 
 <script>
 import CustomerApi from "@/api/customer.js";
-import {resetDataAttr} from '@/utils/index.js'
+import { resetDataAttr } from "@/utils/index.js";
 export default {
   data() {
     return {
@@ -70,51 +62,50 @@ export default {
         .catch(_ => {});
     },
     openDialog(id) {
-   resetDataAttr(this,'form')
-      console.log(this.$options.data(),'this.$options.data')
-      if(id){
-          CustomerApi.getCustomerDetail({
-            merchant:{
-              id
-            }
-          }).then(res=>{
-            if(res.code===0){
-            this.form = res.data
-            }
-          })
-        
+      resetDataAttr(this, "form");
+      console.log(this.$options.data(), "this.$options.data");
+      if (id) {
+        CustomerApi.getCustomerDetail({
+          merchant: {
+            id
+          }
+        }).then(res => {
+          if (res.code === 0) {
+            this.form = res.data;
+          }
+        });
       }
       this.dialogVisible = true;
     },
     addCustomerList() {
-      console.log(this.form)
+      console.log(this.form, "hahah");
       if (this.form.id) {
         CustomerApi.eidtCustomer({
-          merchant:{
-          id:row.id,
-          status:row.status,
-          ...this.form
+          merchant: {
+            id: row.id,
+            ...this.form
           }
         }).then(res => {
-          if (res.msg === "success") {
+          console.log(res);
+          if (res.code === 0) {
             this.dialogVisible = false;
             this.$message({
-              message: "保存成功",
+              message: res.msg,
               type: "success"
             });
             this.$emit("getList");
           } else {
-            this.$message.error("保存失败");
+            this.$message.error(res.msg);
           }
         });
       } else {
         CustomerApi.addCustomer({
-          merchant:{
-          ...this.form,
-          status:1
+          merchant: {
+            ...this.form,
+            status: 1
           }
         }).then(res => {
-          if (res.msg === "success") {
+          if (res.code === 0) {
             this.dialogVisible = false;
             this.$message({
               message: "保存成功",
@@ -122,13 +113,13 @@ export default {
             });
             this.$emit("getList");
           } else {
-            this.$message.error("保存失败");
+            this.$message.error(res.msg);
           }
         });
       }
     }
   },
-  created(){
+  created() {
     this.username = this.$store.state.userInfo.username;
   }
 };

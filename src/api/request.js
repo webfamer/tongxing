@@ -16,16 +16,14 @@ const service = axios.create({
 service.interceptors.request.use(
   config => {
     // do something before request is sent
-
-    // if (store.getters.token) {
+    // console.log(store)
+    if (store.getters.token) {
     // //   // let each request carry token
     // //   // ['X-Token'] is a custom headers key
     // //   // please modify it according to the actual situation
-    //   config.headers['Authorization'] = getToken()
-    // }
-    if(window.localStorage.getItem('token')){
-      config.headers.common['Authorization'] ='Bearer '+ window.localStorage.getItem('token')
+      config.headers['Authorization'] = 'Bearer '+getToken()
     }
+  
     return config
   },
   error => {
@@ -107,7 +105,8 @@ function http(config){
   if(config.method.toLowerCase() === 'post'){
     // 针对对象 是无法直接处理的 ; qs是一个js库,可以方便的对对象进行序列化处理
     // myAjax  {name:'zx',age:20} ==> name=zs&age=20
-    config.data = qs.stringify(config.data,{arrayFormat: 'repeat',allowDots: true});
+    // config.data = qs.stringify(config.data,{arrayFormat: 'repeat',allowDots: true});
+    config.params = config.data;
   }else{
     config.params = config.data;
   }

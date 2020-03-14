@@ -143,13 +143,12 @@ export default {
   },
   methods: {
     getCustomerList() {
-      console.log(122121);
       let params = {merchantChiName:this.search.merchantChiName,startTime:this.search.date[0],endTime:this.search.date[1]}
       customerApi.getCustomer({merchantPage:{
         ...params,
       },
       pageVo:{
-        pageNum:this.page.start,
+        currentPage:this.page.start,
         pageSize:this.page.limit
       }
       }).then(res => {
