@@ -5,7 +5,7 @@ function addCustomer(data) {
   console.log(store)
     return request({
       url: '/merchant/add',
-      method: 'get',
+      method: 'post',
       data:{...data,username:store.state.userInfo.username}
     })
 }
@@ -13,21 +13,21 @@ function addCustomer(data) {
 function delCustomer(data) {
     return request({
       url: '/merchant/delete',
-      method: 'get',
+      method: 'post',
       data:{...data,username:store.state.userInfo.username}
     })
 }
 function eidtCustomer(data) {
     return request({
       url: '/merchant/modify',
-      method: 'get',
+      method: 'post',
       data:{...data,username:store.state.userInfo.username}
     })
 }
 function getCustomer(data) {
   return request({
-    url: '/merchant/page',
-    method: 'get',
+    url: '/operation/merchant/page',
+    method: 'post',
     data:{...data,username:store.state.userInfo.username}
   })
 }
@@ -35,7 +35,7 @@ function getCustomer(data) {
 function getCustomerDetail(data){
   return request({
     url: 'merchant/detail',
-    method: 'get',
+    method: 'post',
     data:{...data,username:store.state.userInfo.username}
   })
 }
@@ -43,14 +43,14 @@ function getCustomerDetail(data){
 function getCustomerApi(data){
   return request({
     url: '/agreement/agreementDetail',
-    method: 'get',
+    method: 'post',
     data:{...data,username:store.state.userInfo.username}
   })
 }
 function getCustomerApiTree(data){
   return request({
     url: '/api/groupApiTree',
-    method: 'get',
+    method: 'post',
     data:{...data,username:store.state.userInfo.username}
   })
 }
@@ -58,7 +58,7 @@ function getCustomerApiTree(data){
 function generateApiTree(data){
   return request({
     url: '/agreement/produce',
-    method: 'get',
+    method: 'post',
     data:{...data,username:store.state.userInfo.username}
   })
 }
