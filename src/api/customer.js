@@ -56,7 +56,7 @@ function getCustomerApiTree(data){
 
 function generateApiTree(data){
   return request({
-    url: '/agreement/produce',
+    url: '/operation/agreement/produce',
     method: 'post',
     data:{...data,username:store.state.userInfo.username}
   })

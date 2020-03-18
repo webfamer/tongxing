@@ -41,6 +41,7 @@
 <script>
 import customerApi from "@/api/customer";
 import { resetDataAttr } from "@/utils/index.js";
+import qs from 'qs'
 export default {
   data() {
     return {
@@ -56,12 +57,12 @@ export default {
   },
   methods: {
     saveForm() {
+        let checkedKey =  this.$refs.tree.getCheckedKeys();
+        let params =qs.stringify({ids: checkedKey}, {arrayFormat: 'repeat'}) 
         customerApi.generateApiTree({
-          appApiInformation:{
-            merchantId:JSON.parse(localStorage.getItem('userData')).id,
+            merchantId:JSON.parse(localStorage.getItem('userdata')).id,
             startTime:this.form.date[0],endTime:this.form.date[1],
-            listApi:this.$refs.tree.getCheckedKeys()
-          }
+            listApi:checkedKey
         }).then(res=>{
           console.log(res)
         })
@@ -69,6 +70,14 @@ export default {
     resetForm(){
       resetDataAttr(this, "form");
       this.dialogVisible = false;
+    },
+    porcessData(arr){
+      let newstr = '';
+      arr.forEach(item=>{
+        newstr += item+'&'
+
+      })
+      return newstr.substr(0,newstr.length-1);
     },
     handleClose(done) {
       this.$confirm("确认关闭？")
