@@ -4,30 +4,30 @@ import store from '@/store/index'
 function addApiGroup(data) {
   console.log(store)
     return request({
-      url: '/group/add',
-      method: 'get',
+      url: '/operation/group/add',
+      method: 'post',
       data:{...data,username:store.state.userInfo.username}
     })
 }
 
 function delApiGroup(data) {
     return request({
-      url: '/group/delete',
-      method: 'get',
+      url: '/operation/group/delete',
+      method: 'post',
       data:{...data,username:store.state.userInfo.username}
     })
 }
 function eidtApiGroup(data) {
     return request({
-      url: '/group/modify',
-      method: 'get',
+      url: '/operation/group/modify',
+      method: 'post',
       data:{...data,username:store.state.userInfo.username}
     })
 }
 function getApiGroup(data) {
   return request({
-    url: '/group/page',
-    method: 'get',
+    url: '/operation/group/page',
+    method: 'post',
     data:{...data,username:store.state.userInfo.username}
   })
 }

@@ -63,28 +63,46 @@ export default {
   },
   methods: {
     edit(data) {
+      console.log(data)
       this.$refs.detail.openDialog(data);
     },
     add() {
       this.$refs.detail.openDialog();
     },
     deleteApiGroup(row) {
-      customerApiGroup
+      this.$confirm(
+        "<strong>是否删除api组?</strong>",
+      "确认提示",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          dangerouslyUseHTMLString: true,
+          type: "warning"
+        }
+      )
+        .then(() => {
+customerApiGroup
         .delApiGroup({
             groupId: row.id,
             status: 99
         })
         .then(res => {
           if (res.code === 0) {
-            this.dialogVisible = false;
-            this.getCustomerList();
+            this.getCustomerGroup();
             this.$message({
               message: "删除成功",
               type: "success"
             });
           } else {
-            this.$message.error("删除失败");
+            this.$message.error(res.msg);
           }
+        });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消停用"
+          });
         });
     },
      handleSizeChange(v){
@@ -99,11 +117,11 @@ export default {
       console.log(122121);
       customerApiGroup.getApiGroup({
       pageVo:{
-        pageNum:this.page.start,
+        currentPage:this.page.start,
         pageSize:this.page.limit
       }
       }).then(res => {
-        this.tableData = res.data.groupList;
+        this.tableData = res.data.records;
         this.page.total=res.data.totalPage;
         this.page.start = res.data.currentPage;
       });

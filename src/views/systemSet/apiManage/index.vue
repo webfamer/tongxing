@@ -88,21 +88,32 @@ export default {
         .getApi({
           api: {},
           pageVo: {
-            pageNum: this.page.start,
+           currentPage: this.page.start,
             pageSize: this.page.limit
           }
         })
         .then(res => {
-          this.tableData = res.data.apiList;
+          this.tableData = res.data.records;
           this.page.total = res.data.totalPage;
           this.page.start = res.data.currentPage;
         });
     },
     deleteApi(row) {
       console.log(row);
+      this.$confirm(
+        "<strong>是否删除api?</strong>",
+        "确认提示",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          dangerouslyUseHTMLString: true,
+          type: "warning"
+        }
+      )
+        .then(() => {
       customerApiList
         .delApi({
-            id: row.id,
+            apiId: row.id,
             status: 99
         })
         .then(res => {
@@ -110,12 +121,19 @@ export default {
             this.dialogVisible = false;
             this.getCustomerList();
             this.$message({
-              message: "删除成功",
+              message: res.msg,
               type: "success"
             });
           } else {
-            this.$message.error("删除失败");
+            this.$message.error(res.msg);
           }
+        })
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消停用"
+          });
         });
     }
   },

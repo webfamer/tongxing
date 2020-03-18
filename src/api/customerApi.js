@@ -1,40 +1,43 @@
 // 使用自己封装的api
 import request from '@/api/request'
 import store from '@/store/index'
+
+
+
 function addApi(data) {
   console.log(store)
     return request({
-      url: '/api/add',
-      method: 'get',
+      url: '/operation/api/add',
+      method: 'post',
       data:{...data,username:store.state.userInfo.username}
     })
 }
 
 function delApi(data) {
     return request({
-      url: '/api/delete',
-      method: 'get',
+      url: '/operation/api/delete',
+      method: 'post',
       data:{...data,username:store.state.userInfo.username}
     })
 }
-function eidtApi(data) {
+function editApi(data) {
     return request({
-      url: '/api/modify',
-      method: 'get',
+      url: '/operation/api/modify',
+      method: 'post',
       data:{...data,username:store.state.userInfo.username}
     })
 }
 function getApi(data) {
   return request({
-    url: '/api/list',
-    method: 'get',
+    url: '/operation/api/apiList',
+    method: 'post',
     data:{...data,username:store.state.userInfo.username}
   })
 }
 function getSetApiTree(data){
   return request({
-    url: '/api/apiTree',
-    method: 'get',
+    url: '/operation/api/groupTree',
+    method: 'post',
     data:{...data,username:store.state.userInfo.username}
   })
 }
@@ -42,7 +45,7 @@ function getSetApiTree(data){
 export default {
     addApi,
     delApi,
-    eidtApi,
+    editApi,
     getApi,
     getSetApiTree
 }

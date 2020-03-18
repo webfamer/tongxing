@@ -153,6 +153,7 @@ $cursor: #000;
     justify-content: center;
     img{
       width: 150px;
+      height:120px;
       margin-bottom: 40px;
     }
   }

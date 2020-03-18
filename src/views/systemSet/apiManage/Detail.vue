@@ -8,15 +8,11 @@
         <el-input v-model="form.apiEngName"></el-input>
       </el-form-item>
       <el-form-item label="所属分组：">
-       <el-select
-          v-model="value1"
-          multiple
-          placeholder="请选择"
-          @change="selectChange"
-        >
-          <el-option style="height: auto" :value=treeData>
+        <el-select v-model="value1" multiple placeholder="请选择" @change="selectChange">
+          <el-option style="height: auto" :value="treeData">
             <el-tree
               :data="treeData"
+              id="testTree"
               show-checkbox
               ref="tree"
               @check-change="handleCheckChange"
@@ -41,14 +37,14 @@
 
 <script>
 import { resetDataAttr } from "@/utils/index.js";
-import customerApiList from '@/api/customerApi'
+import customerApiList from "@/api/customerApi";
 export default {
   data() {
     return {
       form: {},
       dialogVisible: false,
-        treeData: [],
-        value1: [],
+      treeData: [],
+      value1: []
     };
   },
   methods: {
@@ -60,26 +56,32 @@ export default {
         .catch(_ => {});
     },
     openDialog(data) {
-       resetDataAttr(this, "form");
-      if(data){
-        this.form = data
+      resetDataAttr(this, "form");
+      this.$nextTick(res => {
+        this.$refs.tree.setCheckedKeys([]);
+      });
+      if (data) {
+        this.form = data;
       }
       this.dialogVisible = true;
       this.getTreeNode();
-      console.log(this.form,'this.form')
+      console.log(this.form, "this.form");
     },
-      getTreeNode() {
-        console.log(123)
+    getTreeNode() {
+      console.log(123);
       customerApiList.getSetApiTree().then(res => {
         this.treeData = res.data;
       });
     },
-    resetform(){
-        resetDataAttr(this,'form')
+    resetform() {
+      resetDataAttr(this, "form");
     },
-     handleCheckChange() {
+    handleCheckChange(data) {
       let treeNode = this.$refs.tree.getCheckedNodes(true, true);
-      console.log(treeNode,'haa')
+      if (treeNode.length > 1) {
+        this.$refs.tree.setCheckedKeys([data.id]);
+      }
+      console.log(treeNode, "haa");
       let arrNode = [];
       let arrlabel = [];
       treeNode.forEach(item => {
@@ -102,22 +104,49 @@ export default {
       console.log(newarr, "saveNode");
       this.$refs.tree.setCheckedNodes(newarr);
     },
-    saveForm(){
-      customerApiList.addApi({
-          ...this.form,
-          groupId:this.$refs.tree.getCheckedKeys
-      }).then(res=>{
-             if (res.code === 0) {
-            this.dialogVisible = false;
-            this.$message({
-              message: "保存成功",
-              type: "success"
-            });
-            this.$emit("getList");
-          } else {
-            this.$message.error("保存失败");
-          }
-      })
+    saveForm() {
+      console.log(111)
+      let groupId = this.$refs.tree.getCheckedKeys()[0];
+
+      if (this.form.id) {
+        //编辑的调用
+        customerApiList
+          .editApi({
+            ...this.form,
+            groupId: groupId
+          })
+          .then(res => {
+            if (res.code === 0) {
+              this.dialogVisible = false;
+              this.$message({
+                message: "保存成功",
+                type: "success"
+              });
+              this.$emit("getList");
+            } else {
+              this.$message.error(res.msg);
+            }
+          });
+      } else {
+        //新增的调用
+        customerApiList
+          .addApi({
+            ...this.form,
+            groupId: groupId
+          })
+          .then(res => {
+            if (res.code === 0) {
+              this.dialogVisible = false;
+              this.$message({
+                message: "保存成功",
+                type: "success"
+              });
+              this.$emit("getList");
+            } else {
+              this.$message.error(res.msg);
+            }
+          });
+      }
     }
   }
 };
@@ -126,6 +155,16 @@ export default {
 <style lang="scss" scoped>
 .el-select {
   width: 100%;
+}
+/deep/#testTree {
+  .el-checkbox .el-checkbox__inner {
+    display: none;
+  }
+  div[role="group"] {
+    .el-checkbox .el-checkbox__inner {
+      display: inline-block;
+    }
+  }
 }
 </style>>
 

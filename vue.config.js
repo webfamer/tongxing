@@ -38,7 +38,8 @@ module.exports = {
     },
     proxy: {
       '/api': {
-          target: 'http://10.0.53.94:9011',
+          target: 'http://10.0.53.84:9011',
+          logLevel:'debug',//打印代理转发的日志
           changeOrigin: true,
           ws: true,
           pathRewrite: {

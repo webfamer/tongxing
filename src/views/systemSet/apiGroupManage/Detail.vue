@@ -21,6 +21,7 @@
         >
           <el-option style="height: auto" :value="treeData">
             <el-tree
+            id="testTree"
               :data="treeData"
               show-checkbox
               ref="tree"
@@ -43,7 +44,7 @@
     <span slot="footer" class="dialog-footer">
       <el-button
         type="primary"
-        @click="dialogVisible = false"
+        @click="saveForm"
         icon="el-icon-check"
         >提交</el-button
       >
@@ -76,9 +77,14 @@ export default {
         })
         .catch(_ => {});
     },
-    handleCheckChange() {
+    handleCheckChange(data) {
       let treeNode = this.$refs.tree.getCheckedNodes(true, true);
-      console.log(treeNode, "haa");
+      console.log(data, "haa");
+
+if(treeNode.length>1){
+    this.$refs.tree.setCheckedKeys([data.id])
+}
+
       let arrNode = [];
       let arrlabel = [];
       treeNode.forEach(item => {
@@ -102,10 +108,11 @@ export default {
       this.$refs.tree.setCheckedNodes(newarr);
     },
     saveForm() {
+      let groupKey = this.$refs.tree.getCheckedKeys();
       customerApiGroup
         .addApiGroup({
             ...this.form,
-            groupId: this.$refs.tree.getCheckedKeys
+            parentGroupId: groupKey[0]
       
         })
         .then(res => {
@@ -131,6 +138,12 @@ export default {
       resetDataAttr(this, "form");
       if (data) {
         this.form = data;
+        let newarr = [];
+        newarr.push(data.parentGroupId)
+        this.$nextTick(res=>{
+          this.$refs.tree.setCheckedKeys(newarr)
+
+        })
       }
       this.getTreeNode();
       this.dialogVisible = true;
@@ -143,4 +156,15 @@ export default {
 .el-select {
   width: 100%;
 }
+/deep/#testTree {
+  .el-checkbox .el-checkbox__inner {
+    display: none;
+  }
+  div[role="group"] {
+    .el-checkbox .el-checkbox__inner {
+      display: inline-block;
+    }
+  }
+}
+
 </style>

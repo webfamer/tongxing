@@ -41,14 +41,14 @@ function getCustomerDetail(data){
 
 function getCustomerApi(data){
   return request({
-    url: '/agreement/agreementDetail',
+    url: '/operation/agreement/agreementDetail',
     method: 'post',
     data:{...data,username:store.state.userInfo.username}
   })
 }
 function getCustomerApiTree(data){
   return request({
-    url: '/api/groupApiTree',
+    url: '/operation/api/groupApiTree',
     method: 'post',
     data:{...data,username:store.state.userInfo.username}
   })

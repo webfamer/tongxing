@@ -1,33 +1,35 @@
 // 使用自己封装的api
 import request from '@/api/request'
 import store from '@/store/index'
+
+
 function addApp(data) {
   console.log(store)
     return request({
-      url: '/merchant/add',
-      method: 'get',
+      url: '/operation/merchant/app/add',
+      method: 'post',
       data:{...data,username:store.state.userInfo.username}
     })
 }
 
 function delApp(data) {
     return request({
-      url: '/merchant/delete',
-      method: 'get',
+      url: '/operation/merchant/app/delete',
+      method: 'post',
       data:{...data,username:store.state.userInfo.username}
     })
 }
 function eidtApp(data) {
     return request({
-      url: '/merchant/modify',
-      method: 'get',
+      url: '/operation/merchant/app/modify',
+      method: 'post',
       data:{...data,username:store.state.userInfo.username}
     })
 }
 function getApp(data) {
   return request({
-    url: '/merchant/page',
-    method: 'get',
+    url: '/operation/merchant/appDetail',
+    method: 'post',
     data:{...data,username:store.state.userInfo.username}
   })
 }
@@ -35,8 +37,8 @@ function getApp(data) {
 
 function getCustomerSecret(data){ //获取app秘钥
   return request({
-    url: '/viewAppSecret',
-    method: 'get',
+    url: '/operation/viewAppSecret',
+    method: 'post',
     data:{...data,username:store.state.userInfo.username}
   })
 }
