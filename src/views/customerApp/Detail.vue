@@ -107,13 +107,13 @@ export default {
       resetDataAttr(this, "form");
       this.dialogVisible = false;
     },
-    porcessData(arr) {
-      let newstr = "";
-      arr.forEach(item => {
-        newstr += item + "&";
-      });
-      return newstr.substr(0, newstr.length - 1);
-    },
+    // porcessData(arr) {
+    //   let newstr = "";
+    //   arr.forEach(item => {
+    //     newstr += item + "&";
+    //   });
+    //   return newstr.substr(0, newstr.length - 1);
+    // },
     handleClose(done) {
       this.$confirm("确认关闭？")
         .then(_ => {
