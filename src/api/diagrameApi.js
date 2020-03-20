@@ -4,8 +4,8 @@ import store from '@/store/index'
 function getApiopration(data) {
     //操作记录
   return request({
-    url: '/api/operationPage',
-    method: 'get',
+    url: '/operation/api/operationPage',
+    method: 'post',
     data:{...data,username:store.state.userInfo.username}
   })
 }

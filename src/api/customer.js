@@ -2,6 +2,7 @@
 import request from '@/api/request'
 import store from '@/store/index'
 function addCustomer(data) {
+  console.log(request,'1211')
     return request({
       url: '/operation/merchant/add',
       method: 'post',
@@ -56,7 +57,7 @@ function getCustomerApiTree(data){
 
 function generateApiTree(data){
   return request({
-    url: '/agreement/produce',
+    url: '/operation/agreement/produce',
     method: 'post',
     data:{...data,username:store.state.userInfo.username}
   })

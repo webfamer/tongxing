@@ -5,7 +5,7 @@
         <div class="logo">
       <img src="../../assets/img/logo.png" alt="" >
         </div>
-        <h3 class="title">同兴科技运营中台</h3>
+        <h3 class="title">同行科技运营中台</h3>
         <p class="e-name">Customer Relationship Management</p>
       </div>
 

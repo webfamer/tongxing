@@ -22,6 +22,7 @@ service.interceptors.request.use(
     // //   // ['X-Token'] is a custom headers key
     // //   // please modify it according to the actual situation
       config.headers['Authorization'] = 'Bearer '+getToken()
+      
     }
   
     return config
@@ -106,7 +107,13 @@ function http(config){
     // 针对对象 是无法直接处理的 ; qs是一个js库,可以方便的对对象进行序列化处理
     // myAjax  {name:'zx',age:20} ==> name=zs&age=20
     // config.data = qs.stringify(config.data,{arrayFormat: 'repeat',allowDots: true});
-    config.params = config.data;
+    if(config.url==='/oauth/token'){
+      config.params = config.data
+    } else{
+    config.data = config.data;
+    }
+
+
   }else{
     config.params = config.data;
   }
@@ -114,4 +121,7 @@ function http(config){
 }
 
 
-export default http
+// export default http
+
+
+export  default http;

@@ -42,11 +42,21 @@ function getSetApiTree(data){
   })
 }
 
+
+
+function getApiOperation(data){
+  return request({
+    url: '/operation/api/operationPage',
+    method: 'post',
+    data:{...data,username:store.state.userInfo.username}
+  })
+}
 export default {
     addApi,
     delApi,
     editApi,
     getApi,
-    getSetApiTree
+    getSetApiTree,
+    getApiOperation
 }
 

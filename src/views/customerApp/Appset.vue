@@ -21,7 +21,7 @@
           >修改服务</el-button
         >
       </div>
-      <div class="menu" style="clear:both">
+      <div class="menu" style="clear:both" ref="menu">
         <ul>
           <router-link
             tag="li"
@@ -43,7 +43,7 @@
           >
         </ul>
       </div>
-      <Detail ref="detail"></Detail>
+      <Detail ref="detail" @getList="getlist"></Detail>
     </div>
     <router-view />
   </el-card>
@@ -63,7 +63,10 @@ export default {
       this.$refs.detail.openDialog();
     },
     editDialog(){
-      this.$refs.detail.editDialog(this.treeKeyData);
+      this.$refs.detail.editDialog();
+    },
+    getlist(){
+      console.log(this.$children)
     },
     getapiList() {
       customerApi

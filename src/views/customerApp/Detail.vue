@@ -2,17 +2,13 @@
   <el-dialog title="开通服务" :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
     <el-form ref="form" :model="form" label-width="150px">
       <el-form-item label="API服务中文名称：">
-        <el-select
-          v-model="value1"
-          multiple
-          placeholder="请选择"
-          @change="selectChange"
-        >
-          <el-option style="height: auto" :value=treeData>
+        <el-select v-model="value1" multiple placeholder="请选择" @change="selectChange">
+          <el-option style="height: auto" :value="treeData">
             <el-tree
               :data="treeData"
               show-checkbox
               ref="tree"
+              id="testTree"
               @check-change="handleCheckChange"
               node-key="id"
             ></el-tree>
@@ -41,11 +37,13 @@
 <script>
 import customerApi from "@/api/customer";
 import { resetDataAttr } from "@/utils/index.js";
+import Bus from "@/components/bus";
+import qs from "qs";
 export default {
   data() {
     return {
       form: {
-        date:[]
+        date: []
       },
       saveNode: "", //存储节点的变量
       value1: [],
@@ -56,19 +54,65 @@ export default {
   },
   methods: {
     saveForm() {
-        customerApi.generateApiTree({
-          appApiInformation:{
-            merchantId:JSON.parse(localStorage.getItem('userData')).id,
-            startTime:this.form.date[0],endTime:this.form.date[1],
-            listApi:this.$refs.tree.getCheckedKeys()
-          }
-        }).then(res=>{
-          console.log(res)
+      console.log(this.form);
+      Bus.$emit("getList");
+
+      let checkedKey = this.$refs.tree.getCheckedKeys(true);
+      let params = qs.stringify({ ids: checkedKey }, { arrayFormat: "repeat" });
+      customerApi
+        .generateApiTree({
+          merchantId: JSON.parse(localStorage.getItem("userdata")).id,
+          startTime: this.form.date[0],
+          endTime: this.form.date[1],
+          listApi: checkedKey
         })
+        .then(res => {
+          if (res.code === 0) {
+            this.dialogVisible = false;
+            this.$message({
+              message: "保存成功",
+              type: "success"
+            });
+            console.log(121);
+          } else {
+            this.$message.error(res.msg);
+          }
+        });
     },
-    resetForm(){
+    getapiList() {
+      //编辑的时候用
+      customerApi
+        .getCustomerApi({
+          merchantId: JSON.parse(localStorage.getItem("userdata")).id
+        })
+        .then(res => {
+          this.checkData(res.data); //处理数据并回显
+        });
+    },
+    checkData(arr) {
+      let dateTime = []; //时间范围选择
+      let checkedKey = []; //树节点回显
+
+      arr.forEach(item => {
+        checkedKey.push(item.apiId);
+      });
+      dateTime.push(arr[0].startTime);
+      dateTime.push(arr[0].endTime);
+      console.log(checkedKey)
+      this.$refs.tree.setCheckedKeys(checkedKey)
+      this.form.date = dateTime;
+      this.handleCheckChange();
+    },
+    resetForm() {
       resetDataAttr(this, "form");
       this.dialogVisible = false;
+    },
+    porcessData(arr) {
+      let newstr = "";
+      arr.forEach(item => {
+        newstr += item + "&";
+      });
+      return newstr.substr(0, newstr.length - 1);
     },
     handleClose(done) {
       this.$confirm("确认关闭？")
@@ -77,20 +121,19 @@ export default {
         })
         .catch(_ => {});
     },
-    openDialog(){
-       this.dialogVisible = true;
+    openDialog() {
+      this.dialogVisible = true;
+      this.value1 = []
+      this.$refs.tree.setCheckedKeys([],true);
       resetDataAttr(this, "form");
       this.getTreeNode();
     },
     editDialog(data) {
       this.dialogVisible = true;
       resetDataAttr(this, "form");
-      console.log(data,'传过来的数据')
+      console.log("编辑我");
       this.getTreeNode();
-      this.$nextTick(()=>{
-        this.$refs.tree.setCheckedKeys(data);
-
-      })
+      this.getapiList();
     },
     getTreeNode() {
       customerApi.getCustomerApiTree().then(res => {
@@ -102,7 +145,7 @@ export default {
       let arrNode = [];
       let arrlabel = [];
       treeNode.forEach(item => {
-        console.log(item)
+        console.log(item);
         arrlabel.push(item.label);
         arrNode.push(item);
       });
@@ -121,7 +164,7 @@ export default {
       console.log(newarr, "saveNode");
       this.$refs.tree.setCheckedNodes(newarr);
     }
-  }
+  },
 };
 </script>
 
