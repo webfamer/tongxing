@@ -6,7 +6,7 @@ const getDefaultState = () => {
   return {
     token: getToken(),
     name: "",
-    avatar: ""
+    avatar: "",
   };
 };
 
@@ -53,6 +53,30 @@ const actions = {
     });
   },
 
+  refreshAuth({ commit }, userInfo) {  //用refreshToken去请求新token
+    const { username, password } = userInfo;
+    return new Promise((resolve, reject) => {
+      login({
+        username: username.trim(),
+        password: password,
+        grant_type: "refresh_token",
+        scope: "all",
+        client_id: username,
+        client_secret: password
+      }).then(response => {
+  console.log(11)
+
+          const  data  = response;
+          commit("SET_TOKEN", data.access_token);
+          setToken(data.access_token);
+          resolve();
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  },
+
   // get user info
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
@@ -78,18 +102,21 @@ const actions = {
 
   // user logout
   logout({ commit, state }) {
-    return new Promise((resolve, reject) => {
-      logout(state.token)
-        .then(() => {
-          removeToken(); // must remove  token  first
-          resetRouter();
-          commit("RESET_STATE");
-          resolve();
-        })
-        .catch(error => {
-          reject(error);
-        });
-    });
+    // return new Promise((resolve, reject) => {
+    //   logout(state.token)
+    //     .then(() => {
+    //       removeToken(); // must remove  token  first
+    //       resetRouter();
+    //       commit("RESET_STATE");
+    //       resolve();
+    //     })
+    //     .catch(error => {
+    //       reject(error);
+    //     });
+    // });
+    removeToken(); // must remove  token  first
+    resetRouter();
+    commit("RESET_STATE");
   },
 
   // remove token

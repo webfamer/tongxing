@@ -1,10 +1,10 @@
 <template>
   <el-dialog title="新增API服务" :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
-    <el-form ref="form" :model="form" label-width="150px">
-      <el-form-item label="API服务中文名称：">
+    <el-form ref="form" :rules="formRules" :model="form" label-width="160px">
+      <el-form-item label="API服务中文名称：" prop="apiChiName">
         <el-input v-model="form.apiChiName"></el-input>
       </el-form-item>
-      <el-form-item label="API服务英文名称：">
+      <el-form-item label="API服务英文名称：" prop="apiEngName">
         <el-input v-model="form.apiEngName"></el-input>
       </el-form-item>
       <el-form-item label="所属分组：">
@@ -21,15 +21,15 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="路径：">
+      <el-form-item label="路径：" prop="apiPath">
         <el-input v-model="form.apiPath"></el-input>
       </el-form-item>
-      <el-form-item label="描述：">
+      <el-form-item label="描述：" prop="remark">
         <el-input type="textarea" v-model="form.remark"></el-input>
       </el-form-item>
     </el-form>
     <span slot="footer" class="dialog-footer">
-      <el-button type="primary" @click="saveForm" icon="el-icon-check">提交</el-button>
+      <el-button type="primary" @click="saveForm('form')" icon="el-icon-check">提交</el-button>
       <el-button @click="resetform" icon="el-icon-refresh-right">重置</el-button>
     </span>
   </el-dialog>
@@ -38,13 +38,48 @@
 <script>
 import { resetDataAttr } from "@/utils/index.js";
 import customerApiList from "@/api/customerApi";
+import {
+  validateChinese,
+  validateEnglish,
+  validateApi
+} from "@/utils/validate";
 export default {
   data() {
     return {
       form: {},
       dialogVisible: false,
       treeData: [],
-      value1: []
+      value1: [],
+      formRules: {
+        apiChiName: [
+          { required: true, message: "请输入中文名称", trigger: "blur" },
+          {
+            min: 3,
+            max: 10,
+            message: "长度在 3 到 10 个字符",
+            trigger: "blur"
+          },
+          { validator: validateChinese, trigger: "blur" }
+        ],
+        apiEngName: [
+          { required: true, message: "请输入活动名称", trigger: "blur" },
+          {
+            min: 3,
+            max: 10,
+            message: "长度在 3 到 10 个字符",
+            trigger: "blur"
+          },
+          { validator: validateEnglish, trigger: "blur" }
+        ],
+        apiPath: [
+          { required: true, message: "请输入活动名称", trigger: "blur" },
+          { validator: validateApi, trigger: "blur" }
+        ],
+        remark: [
+          { required: true, message: "请输入描述信息", trigger: "blur" },
+          { min: 3, max: 100, message: "最多输入3-100个字符", trigger: "blur" }
+        ]
+      }
     };
   },
   methods: {
@@ -56,12 +91,21 @@ export default {
         .catch(_ => {});
     },
     openDialog(data) {
-      resetDataAttr(this, "form");
-      this.$nextTick(res => {
-        this.$refs.tree.setCheckedKeys([]);
-      });
+
+      //  this.$nextTick(()=>{
+      //    this.$refs['form'].resetFields();
+      // resetDataAttr(this, "form");
+      // })
+      // this.$nextTick(res => {
+      //   this.$refs.tree.setCheckedKeys([]);
+      // });
       if (data) {
         this.form = data;
+        this.setTreeNode([data.groupId]);
+      }else{
+      resetDataAttr(this, "form");
+       this.$refs['form'].resetFields();
+       this.setTreeNode();
       }
       this.dialogVisible = true;
       this.getTreeNode();
@@ -72,6 +116,16 @@ export default {
       customerApiList.getSetApiTree().then(res => {
         this.treeData = res.data;
       });
+    },
+     async setTreeNode(arrKey){
+       await this.getTreeNode();
+       if(arrKey){
+          this.$refs.tree.setCheckedKeys(arrKey);
+          this.value1 = arrKey
+       }else{
+        this.$refs.tree.setCheckedKeys([]);
+        this.value1 =[]
+       }
     },
     resetform() {
       resetDataAttr(this, "form");
@@ -104,10 +158,11 @@ export default {
       console.log(newarr, "saveNode");
       this.$refs.tree.setCheckedNodes(newarr);
     },
-    saveForm() {
-      console.log(111)
+    saveForm(formName) {
+      console.log(111);
       let groupId = this.$refs.tree.getCheckedKeys()[0];
-
+       this.$refs[formName].validate((valid) => {
+     if (valid) {
       if (this.form.id) {
         //编辑的调用
         customerApiList
@@ -147,6 +202,11 @@ export default {
             }
           });
       }
+       } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
     }
   }
 };

@@ -4,14 +4,13 @@
       <el-row :gutter="20">
         <el-col :span="3">
           <div class="block">
-            <el-input v-model="search.merchantChiName" placeholder="搜索客户名称"></el-input>
+            <el-input v-model="search.merchantChiName"   maxlength="10" placeholder="搜索客户名称"></el-input>
           </div>
         </el-col>
         <el-col :span="5" :offset="1">
           <el-date-picker
             v-model="search.date"
             type="daterange"
-            value-format="yyyy-MM-dd"
             range-separator="至"
             start-placeholder="开始日期"
             end-placeholder="结束日期"
@@ -27,18 +26,18 @@
     <div class="content-box">
       <el-card shadow="never">
         <div slot="header" class="clearfix">
-          <el-button type="primary" icon="el-icon-plus" @click="add">新增</el-button>
+          <el-button type="primary" icon="el-icon-plus" @click="add()">新增</el-button>
         </div>
         <el-table
           :data="tableData"
           style="width: 100%"
           :default-sort="{ prop: 'createTime', order: 'ascending' }"
         >
-          <el-table-column prop="merchantChiName" label="客户名称" width="180"></el-table-column>
+          <el-table-column prop="merchantChiName"  label="客户名称" width="180"></el-table-column>
           <el-table-column prop="openedApiAmount" label="已开通服务" width="180"></el-table-column>
           <el-table-column prop="follower" label="首联系人"></el-table-column>
           <el-table-column prop="phoneNumber" label="手机号码"></el-table-column>
-          <el-table-column prop="createTime" sortable label="创建时间"></el-table-column>
+          <el-table-column prop="createTime" sortable label="创建时间" :formatter="formatter"></el-table-column>
           <el-table-column fixed="right" label="操作" width="400">
             <template slot-scope="scope">
               <el-button
@@ -135,6 +134,10 @@ export default {
           this.page.total = res.data.totalPage;
           this.page.start = res.data.currentPage;
         });
+    },
+    formatter({createTime}){
+      return createTime.replace(/T/g,'   ' )
+      
     },
     disableCustomer(row) {
       //停用商户
@@ -254,7 +257,8 @@ export default {
       console.log(row);
       this.$refs.detail.openDialog(row.id);
     },
-    add() {
+    add(formName) {
+      resetDataAttr(this, "search");
       this.$refs.detail.openDialog();
     },
     handleSizeChange(v) {
@@ -270,8 +274,8 @@ export default {
       this.getCustomerList();
     },
     resetForm() {
-      this.getCustomerList();
       resetDataAttr(this, "search");
+   this.getCustomerList();
     },
     jumpsAppItem(row) {
       this.$router.push({ name: "appitem", params: row });

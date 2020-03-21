@@ -34,13 +34,16 @@ export default {
         });
     },
     getlist(){
+      this.$nextTick(()=>{
      this.getapiList();
+
+      })
     },
     formatter(row){
       if(row.status==='1'){
-        return '成功'
+        return '进行中'
       }else{
-        return '失败'
+        return '已过期'
       }
     } 
   },

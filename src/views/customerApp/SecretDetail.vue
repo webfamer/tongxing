@@ -2,7 +2,7 @@
   <div>
     <el-dialog title="查看秘钥" :visible.sync="dialogFormVisible">
       <div class="secret">
-        <span>{{secret.clientId}}<br>{{secret.clientSecret}}</span>
+        <span>clientId：   {{secret.clientId}}<br>clientSecret：   {{secret.clientSecret}}</span>
  <button style="float:right" class="btn" :data-clipboard-text="'用户名:'+secret.clientId+'密码:'+secret.clientSecret">
          <i class="el-icon-document-copy"></i>
     </button>

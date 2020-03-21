@@ -60,8 +60,12 @@ service.interceptors.response.use(
       router.replace({path:'/login'});
       return Promise.reject()
     }else{
+    console.log(res)
+
       return res
     }
+
+    //请求过期，重新请求token
     // if the custom code is not 20000, it is judged as an error.
     // if (res.code !== 20000) {
     //   Message({

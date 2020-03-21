@@ -21,7 +21,7 @@
           <el-table-column prop="status" label="上架状态" width="180"></el-table-column>
           <el-table-column prop="apiPath" label="API路径"></el-table-column>
           <el-table-column prop="remark" label="描述"></el-table-column>
-          <el-table-column prop="gmtModified" label="修改时间" sortable></el-table-column>
+          <el-table-column prop="gmtModified" :formatter="formatter" label="修改时间" sortable></el-table-column>
           <el-table-column label="操作" width="150">
             <template slot-scope="scope">
               <el-button
@@ -73,6 +73,10 @@ export default {
     },
     add() {
       this.$refs.detail.openDialog();
+    },
+       formatter({gmtModified}){
+      return gmtModified.replace(/T/g,'   ' )
+      
     },
     handleSizeChange(v) {
       this.page.limit = v;

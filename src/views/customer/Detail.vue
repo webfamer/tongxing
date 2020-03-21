@@ -1,20 +1,20 @@
 <template>
-  <el-dialog title="添加客户" :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
-    <el-form ref="form" :model="form" label-width="120px">
-      <el-form-item label="客户中文名称">
+  <el-dialog title="添加客户"  :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
+    <el-form ref="form"  :rules="formRules" :model="form" label-width="120px">
+      <el-form-item label="客户中文名称" prop="merchantChiName">
         <el-input v-model="form.merchantChiName"></el-input>
       </el-form-item>
-      <el-form-item label="客户英文名称">
+      <el-form-item label="客户英文名称" prop="merchantEngName">
         <el-input v-model="form.merchantEngName"></el-input>
       </el-form-item>
-       <el-form-item label="客户描述">
-        <el-input v-model="form.description"></el-input>
+       <el-form-item label="客户描述" prop="description">
+        <el-input  type="textarea" autosize v-model="form.description"></el-input>
       </el-form-item>
-      <el-form-item label="首联系人">
+      <el-form-item label="首联系人" prop="follower">
         <el-input v-model="form.follower"></el-input>
       </el-form-item>
-      <el-form-item label="手机号码">
-        <el-input v-model="form.phoneNumber"></el-input>
+      <el-form-item label="手机号码" prop="phoneNumber">
+        <el-input v-model.number="form.phoneNumber"></el-input>
       </el-form-item>
       <!-- <el-form-item label="营业执照">
     <el-upload
@@ -41,7 +41,7 @@
     </el-form>
     <span slot="footer" class="dialog-footer">
       <el-button @click="dialogVisible = false">取 消</el-button>
-      <el-button type="primary" @click="addCustomerList">保存</el-button>
+      <el-button type="primary" @click="addCustomerList('form')">保存</el-button>
     </span>
   </el-dialog>
 </template>
@@ -49,12 +49,37 @@
 <script>
 import CustomerApi from "@/api/customer.js";
 import { resetDataAttr } from "@/utils/index.js";
+import { validatePhone,validateChinese,validateEnglish} from '@/utils/validate'
 export default {
   data() {
     return {
       form: {},
-      dialogVisible: false
-    };
+      dialogVisible: false,
+      formRules:{
+        merchantChiName:[
+          { required: true, message: '请输入中文名称', trigger: 'blur' },
+          { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' },
+           { validator: validateChinese, trigger: 'blur' }
+        ],
+          merchantEngName:[
+          { required: true, message: '请输入英文名称', trigger: 'blur' },
+          { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' },
+           { validator: validateEnglish, trigger: 'blur' }
+        ],
+         description:[
+            { required: true, message: '请输入描述信息', trigger: 'blur' },
+          {min:3, max: 100, message: '最多输入3-100个字符', trigger: 'blur' },
+        ],
+          follower:[
+          { required: true, message: '请输入联系人', trigger: 'blur' },
+          { validator: validateChinese, trigger: 'blur' }
+        ],
+         phoneNumber: [
+            { required: true, message: '请输入手机号码', trigger: 'blur' },
+            { validator: validatePhone, trigger: 'blur' }
+          ],
+      }
+    }
   },
   methods: {
     handleClose(done) {
@@ -65,8 +90,11 @@ export default {
         .catch(_ => {});
     },
     openDialog(id) {
+      this.$nextTick(()=>{
+         this.$refs['form'].resetFields();
       resetDataAttr(this, "form");
-      console.log(this.$options.data(), "this.$options.data");
+      })
+      console.log(this.form, "this.$options.data");
       if (id) {
         CustomerApi.getCustomerDetail({
             merchantId:id
@@ -78,9 +106,10 @@ export default {
       }
       this.dialogVisible = true;
     },
-    addCustomerList() {
-      console.log(this.form, "hahah");
-      if (this.form.id) {
+    addCustomerList(formName) {
+       this.$refs[formName].validate((valid) => {
+          if (valid) {
+             if (this.form.id) {
         CustomerApi.eidtCustomer({
             merchantId: this.form.id,
             ...this.form
@@ -113,6 +142,13 @@ export default {
           }
         });
       }
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      console.log(this.form, "hahah");
+     
     }
   },
   created() {

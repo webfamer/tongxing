@@ -1,27 +1,17 @@
 <template>
-  <el-dialog
-    title="新增API服务"
-    :visible.sync="dialogVisible"
-    width="30%"
-    :before-close="handleClose"
-  >
-    <el-form ref="form" :model="form" label-width="150px">
-      <el-form-item label="分组中文名称：">
+  <el-dialog title="新增API服务" :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
+    <el-form ref="form" :rules="formRules" :model="form" label-width="150px">
+      <el-form-item label="分组中文名称：" prop="groupChiName">
         <el-input v-model="form.groupChiName"></el-input>
       </el-form-item>
-      <el-form-item label="分组英文名称：">
+      <el-form-item label="分组英文名称：" prop="groupEngName">
         <el-input v-model="form.groupEngName"></el-input>
       </el-form-item>
       <el-form-item label="上级分组：">
-        <el-select
-          v-model="value1"
-          multiple
-          placeholder="请选择"
-          @change="selectChange"
-        >
+        <el-select v-model="value1" multiple placeholder="请选择" @change="selectChange">
           <el-option style="height: auto" :value="treeData">
             <el-tree
-            id="testTree"
+              id="testTree"
               :data="treeData"
               show-checkbox
               ref="tree"
@@ -31,26 +21,13 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="描述：">
-        <el-input
-          type="textarea"
-          autosize
-          placeholder="请输入内容"
-          v-model="form.description"
-        >
-        </el-input>
+      <el-form-item label="描述：" prop="description">
+        <el-input type="textarea" autosize placeholder="请输入内容" v-model="form.description"></el-input>
       </el-form-item>
     </el-form>
     <span slot="footer" class="dialog-footer">
-      <el-button
-        type="primary"
-        @click="saveForm"
-        icon="el-icon-check"
-        >提交</el-button
-      >
-      <el-button @click="dialogVisible = false" icon="el-icon-refresh-right"
-        >重置</el-button
-      >
+      <el-button type="primary" @click="saveForm('form')" icon="el-icon-check">提交</el-button>
+      <el-button @click="dialogVisible = false" icon="el-icon-refresh-right">重置</el-button>
     </span>
   </el-dialog>
 </template>
@@ -59,6 +36,7 @@
 import { resetDataAttr } from "@/utils/index.js";
 import customerApiGroup from "@/api/customerGroupApi";
 import customerApiList from "@/api/customerApi";
+import { validateChinese, validateEnglish } from "@/utils/validate";
 export default {
   data() {
     return {
@@ -66,7 +44,33 @@ export default {
       treeData: [],
       value1: [],
       dialogVisible: false,
-      num: 0
+      num: 0,
+      formRules: {
+        groupChiName: [
+          { required: true, message: "请输入活动名称", trigger: "blur" },
+          {
+            min: 3,
+            max: 10,
+            message: "长度在 3 到 10 个字符",
+            trigger: "blur"
+          },
+          { validator: validateChinese, trigger: "blur" }
+        ],
+        groupEngName: [
+          { required: true, message: "请输入活动名称", trigger: "blur" },
+          {
+            min: 3,
+            max: 10,
+            message: "长度在 3 到 10 个字符",
+            trigger: "blur"
+          },
+          { validator: validateEnglish, trigger: "blur" }
+        ],
+        description: [
+          { required: true, message: "请输入描述信息", trigger: "blur" },
+          { min: 3, max: 100, message: "最多输入3-100个字符", trigger: "blur" }
+        ]
+      }
     };
   },
   methods: {
@@ -81,9 +85,9 @@ export default {
       let treeNode = this.$refs.tree.getCheckedNodes(true, true);
       console.log(data, "haa");
 
-if(treeNode.length>1){
-    this.$refs.tree.setCheckedKeys([data.id])
-}
+      if (treeNode.length > 1) {
+        this.$refs.tree.setCheckedKeys([data.id]);
+      }
 
       let arrNode = [];
       let arrlabel = [];
@@ -107,13 +111,14 @@ if(treeNode.length>1){
       console.log(newarr, "saveNode");
       this.$refs.tree.setCheckedNodes(newarr);
     },
-    saveForm() {
+    saveForm(formName) {
       let groupKey = this.$refs.tree.getCheckedKeys();
+ this.$refs[formName].validate((valid) => {
+     if (valid) {
       customerApiGroup
         .addApiGroup({
-            ...this.form,
-            parentGroupId: groupKey[0]
-      
+          ...this.form,
+          parentGroupId: groupKey[0]
         })
         .then(res => {
           if (res.code === 0) {
@@ -127,6 +132,11 @@ if(treeNode.length>1){
             this.$message.error("保存失败");
           }
         });
+         } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
     },
     getTreeNode() {
       console.log(123);
@@ -135,19 +145,27 @@ if(treeNode.length>1){
       });
     },
     openDialog(data) {
-      resetDataAttr(this, "form");
-      if (data) {
+  if (data) {
         this.form = data;
-        let newarr = [];
-        newarr.push(data.parentGroupId)
-        this.$nextTick(res=>{
-          this.$refs.tree.setCheckedKeys(newarr)
-
-        })
+        this.setTreeNode([data.parentGroupId]);
+      }else{
+      resetDataAttr(this, "form");
+       this.$refs['form'].resetFields();
+       this.setTreeNode();
       }
-      this.getTreeNode();
       this.dialogVisible = true;
-    }
+      this.getTreeNode();
+    },
+      async setTreeNode(arrKey){
+       await this.getTreeNode();
+       if(arrKey){
+          this.$refs.tree.setCheckedKeys(arrKey);
+          this.value1 = arrKey
+       }else{
+        this.$refs.tree.setCheckedKeys([]);
+        this.value1 =[]
+       }
+    },
   }
 };
 </script>
@@ -166,5 +184,4 @@ if(treeNode.length>1){
     }
   }
 }
-
 </style>

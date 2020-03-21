@@ -38,7 +38,7 @@ module.exports = {
     },
     proxy: {
       '/api': {
-          target: 'http://10.0.53.94:9011',
+          target: 'http://192.168.40.151:9011',
           logLevel:'debug',//打印代理转发的日志
           changeOrigin: true,
           ws: true,
@@ -47,6 +47,7 @@ module.exports = {
           }
       }
   }
+  // 192.168.40.151
     // before: require('./mock/mock-server.js')
   },
   configureWebpack: {

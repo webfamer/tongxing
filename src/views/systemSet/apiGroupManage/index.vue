@@ -20,7 +20,7 @@
           <el-table-column prop="groupChiName" label="API分组名称"  width="180"></el-table-column>
           <el-table-column prop="apiCount" label="包含API数"  width="180"></el-table-column>
           <el-table-column prop="description" label="描述" ></el-table-column>
-          <el-table-column prop="gmtModified" label="修改时间" ></el-table-column>
+          <el-table-column prop="gmtModified" label="修改时间" :formatter="formatter"></el-table-column>
           <el-table-column  label="操作" width="150" >
             <template slot-scope="scope" >
                 <el-button
@@ -108,6 +108,10 @@ customerApiGroup
      handleSizeChange(v){
         this.page.limit = v;
         this.getCustomerGroup();
+    },
+       formatter({gmtModified}){
+      return gmtModified.replace(/T/g,'   ' )
+      
     },
     handleCurrentChange(v){
       this.page.start = v;

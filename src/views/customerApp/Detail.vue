@@ -90,22 +90,26 @@ export default {
         });
     },
     checkData(arr) {
-      let dateTime = []; //时间范围选择
+      let { startTime, endTime } = arr[0];
       let checkedKey = []; //树节点回显
-
       arr.forEach(item => {
         checkedKey.push(item.apiId);
       });
-      dateTime.push(arr[0].startTime);
-      dateTime.push(arr[0].endTime);
-      console.log(checkedKey)
-      this.$refs.tree.setCheckedKeys(checkedKey)
-      this.form.date = dateTime;
+      
+      this.$nextTick(()=>{
+      this.$refs.tree.setCheckedKeys(checkedKey);
+      this.handleCheckChange();
+      })
+      this.form.date = [startTime, endTime];
       this.handleCheckChange();
     },
     resetForm() {
       resetDataAttr(this, "form");
-      this.dialogVisible = false;
+      this.$nextTick(()=>{
+      this.value1 = [];
+      })
+      this.$refs.tree.setCheckedKeys([], true);
+      // this.dialogVisible = false;
     },
     // porcessData(arr) {
     //   let newstr = "";
@@ -123,17 +127,23 @@ export default {
     },
     openDialog() {
       this.dialogVisible = true;
-      this.value1 = []
-      this.$refs.tree.setCheckedKeys([],true);
-      resetDataAttr(this, "form");
-      this.getTreeNode();
+      this.setTreeNode();
     },
     editDialog(data) {
       this.dialogVisible = true;
-      resetDataAttr(this, "form");
-      console.log("编辑我");
-      this.getTreeNode();
-      this.getapiList();
+      this.setTreeNode(true);
+    },
+    async setTreeNode(arrKey) {
+      await this.getTreeNode();
+      if (arrKey) {
+        this.getapiList();
+      } else {
+        this.form = {};
+        this.$nextTick(()=>{
+        this.value1 = [];
+        })
+        this.$refs.tree.setCheckedKeys([]);
+      }
     },
     getTreeNode() {
       customerApi.getCustomerApiTree().then(res => {
@@ -164,7 +174,7 @@ export default {
       console.log(newarr, "saveNode");
       this.$refs.tree.setCheckedNodes(newarr);
     }
-  },
+  }
 };
 </script>
 

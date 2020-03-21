@@ -3,13 +3,13 @@
     <el-card class="search-box" shadow="hover">
       <el-row :gutter="20">
         <el-col :span="3">
-          <el-input v-model="search.merchantChiName" placeholder="筛选调用客户"></el-input>
+          <el-input v-model="search.merchantChiName"  maxlength="10" placeholder="筛选调用客户"></el-input>
         </el-col>
         <el-col :span="3">
-          <el-input v-model="search.apiChiName" placeholder="筛选API服务"></el-input>
+          <el-input v-model="search.apiChiName"  maxlength="10" placeholder="筛选API服务"></el-input>
         </el-col>
         <el-col :span="3">
-          <el-input v-model="search.result" placeholder="筛选调用结果"></el-input>
+          <el-input v-model="search.result"  maxlength="10" placeholder="筛选调用结果"></el-input>
         </el-col>
         <el-col :span="5" :offset="1">
         <el-date-picker
@@ -40,7 +40,7 @@
           <el-table-column prop="merchantChiName" label="调用客户" width="180"></el-table-column>
           <el-table-column prop="ip" label="调用IP"></el-table-column>
           <el-table-column prop="result" label="调用结果"></el-table-column>
-          <el-table-column prop="useTime" label="调用时间" sortable></el-table-column>
+          <el-table-column prop="useTime" label="调用时间" sortable :formatter="formatter"></el-table-column>
         </el-table>
         <div class="block" style="float:right; margin-top:30px;margin-bottom:30px;">
           <Pagination
@@ -82,9 +82,9 @@ export default {
       };
       diagrameApi
         .getApiopration({
-          apiPage: {
-            ...params
-          },
+       
+            ...params,
+         
           pageVo: {
             pageNum: this.page.start,
             pageSize: this.page.limit
@@ -102,8 +102,12 @@ export default {
       this.getApiOpration();
     },
     resetForm() {
-      this.getApiOpration();
       resetDataAttr(this, "search");
+      this.getApiOpration();
+    },
+      formatter({useTime}){
+      return useTime.replace(/T/g,'   ' )
+      
     },
     handleSizeChange(v) {
       this.page.limit = v;
