@@ -18,7 +18,7 @@
           :default-sort="{ prop: 'date', order: 'descending' }"
         >
           <el-table-column prop="apiChiName" label="API服务名称" width="180"></el-table-column>
-          <el-table-column prop="status" label="上架状态" width="180"></el-table-column>
+          <el-table-column prop="status" label="上架状态" width="180" :formatter="formatterStatus"></el-table-column>
           <el-table-column prop="apiPath" label="API路径"></el-table-column>
           <el-table-column prop="remark" label="描述"></el-table-column>
           <el-table-column prop="gmtModified" :formatter="formatter" label="修改时间" sortable></el-table-column>
@@ -86,8 +86,17 @@ export default {
       this.page.start = v;
       this.getCustomerList();
     },
+    formatterStatus(row){
+      if(row.status ===1){
+        return '上架中'
+      }else{
+        return '已下架'
+      }
+    },
     getCustomerList() {
-      console.log(122121);
+          if(this.page.start>1&& this.tableData.length===1){ //如果是最后一条数据，更改请求的当前页
+          this.page.start-=1;
+    }
       customerApiList
         .getApi({
           api: {},

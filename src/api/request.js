@@ -60,8 +60,7 @@ service.interceptors.response.use(
       router.replace({path:'/login'});
       return Promise.reject()
     }else{
-    console.log(res)
-
+    // console.log(res)
       return res
     }
 
@@ -94,16 +93,45 @@ service.interceptors.response.use(
     return res
   },
   error => {
+    console.log(error.response.status)
+    if(error.response.status===401){
+      if(router.history.current.path==='/login'){
+        Message({
+          message: '用户名或密码错误',
+          type: 'error',
+          duration: 3 * 1000
+        })
+      }else{
+        store.dispatch('user/refreshAuth').then(() => {
+          location.reload()
+        })
+      }
+    }
     console.log('err' + error) // for debug
-    Message({
-      message: error.message,
-      type: 'error',
-      duration: 5 * 1000
-    })
+    // Message({
+    //   message: error.message,
+    //   type: 'error',
+    //   duration: 5 * 1000
+    // })
     return Promise.reject(error)
   }
 )
-
+function processData(data){ //处理对象空值
+  for(let key in data){
+        //如果是对象，在继续遍历
+        if(Object.prototype.toString.call(data[key])==='[object Object]'){
+          if(Object.keys(data[key]).length === 0){ //如果是空对象，删除
+             delete data[key]
+          }else{
+          processData(data[key])
+          }
+      }else if(!data[key]){
+  
+      delete data[key]
+  }
+} 
+  return data;
+}
 // 请求分为get/post
 // axios对于get和post的参数的处理方式是不同的
 function http(config){
@@ -114,10 +142,8 @@ function http(config){
     if(config.url==='/oauth/token'){
       config.params = config.data
     } else{
-    config.data = config.data;
+    config.data = processData(config.data);
     }
-
-
   }else{
     config.params = config.data;
   }

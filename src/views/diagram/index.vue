@@ -3,24 +3,30 @@
     <el-card class="search-box" shadow="hover">
       <el-row :gutter="20">
         <el-col :span="3">
-          <el-input v-model="search.merchantChiName"  maxlength="10" placeholder="筛选调用客户"></el-input>
+          <el-input v-model="search.merchantChiName" maxlength="10" placeholder="筛选调用客户"></el-input>
         </el-col>
         <el-col :span="3">
-          <el-input v-model="search.apiChiName"  maxlength="10" placeholder="筛选API服务"></el-input>
+          <el-input v-model="search.apiChiName" maxlength="10" placeholder="筛选API服务"></el-input>
         </el-col>
         <el-col :span="3">
-          <el-input v-model="search.result"  maxlength="10" placeholder="筛选调用结果"></el-input>
+          <el-select v-model="search.result" maxlength="10" placeholder="筛选调用结果">
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
         </el-col>
         <el-col :span="5" :offset="1">
-        <el-date-picker
+          <el-date-picker
             v-model="search.date"
             type="daterange"
             value-format="yyyy-MM-dd"
             range-separator="至"
             start-placeholder="开始日期"
             end-placeholder="结束日期"
-          >
-          </el-date-picker>
+          ></el-date-picker>
         </el-col>
         <el-col :span="4" :offset="1" :lg="6" :md="8">
           <el-button type="primary" icon="el-icon-search" @click="doSearch">查询</el-button>
@@ -38,8 +44,8 @@
         >
           <el-table-column prop="apiChiName" label="API服务名称" width="180"></el-table-column>
           <el-table-column prop="merchantChiName" label="调用客户" width="180"></el-table-column>
-          <el-table-column prop="ip" label="调用IP"></el-table-column>
-          <el-table-column prop="result" label="调用结果"></el-table-column>
+          <el-table-column prop="ip" label="调用IP" width="180"></el-table-column>
+          <el-table-column :show-overflow-tooltip="true" prop="result" label="调用结果"></el-table-column>
           <el-table-column prop="useTime" label="调用时间" sortable :formatter="formatter"></el-table-column>
         </el-table>
         <div class="block" style="float:right; margin-top:30px;margin-bottom:30px;">
@@ -57,6 +63,8 @@
 import PageMixins from "@/mixins/pageMixins";
 import Pagination from "@/components/Pagination/index";
 import diagrameApi from "@/api/diagrameApi";
+import { resetDataAttr } from "@/utils/index.js";
+import _ from "lodash";
 export default {
   mixins: [PageMixins],
   data() {
@@ -64,6 +72,7 @@ export default {
       input: "",
       value1: "",
       value: "", //select选中值
+      options:[{value:0,label:'成功'},{value:1,label:'失败'}],
       search: {
         date: []
       },
@@ -74,19 +83,18 @@ export default {
     getApiOpration() {
       console.log(122121);
       let params = {
-        merchantChiName: this.search.merchantChiName,
-        apiChiName: this.search.apiChiName,
-        result: this.search.result,
+        merchantChiName: _.trim(this.search.merchantChiName),
+        apiChiName: _.trim(this.search.apiChiName),
+        result: _.trim(this.search.result),
         startTime: this.search.date[0],
         endTime: this.search.date[1]
       };
       diagrameApi
         .getApiopration({
-       
-            ...params,
-         
+          ...params,
+
           pageVo: {
-            pageNum: this.page.start,
+            currentPage: this.page.start,
             pageSize: this.page.limit
           }
         })
@@ -105,9 +113,8 @@ export default {
       resetDataAttr(this, "search");
       this.getApiOpration();
     },
-      formatter({useTime}){
-      return useTime.replace(/T/g,'   ' )
-      
+    formatter({ useTime }) {
+      return useTime.replace(/T/g, "   ");
     },
     handleSizeChange(v) {
       this.page.limit = v;

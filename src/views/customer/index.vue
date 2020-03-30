@@ -115,9 +115,13 @@ export default {
     this.getCustomerList();
   },
   methods: {
+  
     getCustomerList() {
+        if(this.page.start>1&& this.tableData.length===1){ //如果是最后一条数据，更改请求的当前页
+          this.page.start-=1;
+    }
       let params = {
-        merchantChiName: this.search.merchantChiName,
+        merchantChiName: _.trim(this.search.merchantChiName),
         startTime: this.search.date[0],
         endTime: this.search.date[1]
       };

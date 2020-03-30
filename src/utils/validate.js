@@ -38,7 +38,7 @@ export function validateChinese(rule, value,callback) {//匹配中文
     }
 }
 export function validateEnglish(rule, value,callback) {//匹配英文
-  const reg =/^[a-zA-Z]+$/;
+  const reg =/^[a-zA-Z\s]+$/;
     if ((!reg.test(value)) && value != '') {
       callback(new Error('请输入英文'));
     } else {
@@ -47,10 +47,31 @@ export function validateEnglish(rule, value,callback) {//匹配英文
 }
 
 
-export function validateApi(rule, value,callback) {//匹配英文
+export function validateApi(rule, value,callback) {//匹配API
   const reg =/^\/[a-zA-z]+$/;
     if ((!reg.test(value)) && value != '') {
       callback(new Error('请输入正确api'));
+    } else {
+      callback();
+    }
+}
+
+
+export function validateSymbol(rule, value,callback) {//匹配特殊字符
+  const reg =/((?=[\x21-\x7e]+)[^A-Za-z0-9])+/;
+    if ((reg.test(value)) && value != '') {
+      callback(new Error('请不要输入特殊字符'));
+    } else {
+      callback();
+    }
+}
+
+
+
+export function validateAppName(rule, value,callback) {//匹配中文英文数字
+  const reg =/^[\u4e00-\u9fa5_a-zA-Z0-9]+$/;
+    if ((!reg.test(value)) && value != '') {
+      callback(new Error('请不要输入特殊字符'));
     } else {
       callback();
     }

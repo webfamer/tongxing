@@ -1,5 +1,5 @@
 <template>
-  <el-dialog title="添加客户"  :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
+  <el-dialog :title="title"  :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
     <el-form ref="form"  :rules="formRules" :model="form" label-width="120px">
       <el-form-item label="客户中文名称" prop="merchantChiName">
         <el-input v-model="form.merchantChiName"></el-input>
@@ -55,6 +55,7 @@ export default {
     return {
       form: {},
       dialogVisible: false,
+      title:'添加客户',
       formRules:{
         merchantChiName:[
           { required: true, message: '请输入中文名称', trigger: 'blur' },
@@ -72,6 +73,7 @@ export default {
         ],
           follower:[
           { required: true, message: '请输入联系人', trigger: 'blur' },
+            { min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur' },
           { validator: validateChinese, trigger: 'blur' }
         ],
          phoneNumber: [
@@ -90,12 +92,14 @@ export default {
         .catch(_ => {});
     },
     openDialog(id) {
+      this.dialogVisible = true;
       this.$nextTick(()=>{
          this.$refs['form'].resetFields();
       resetDataAttr(this, "form");
       })
       console.log(this.form, "this.$options.data");
       if (id) {
+        this.title="编辑客户" //切换弹窗标题
         CustomerApi.getCustomerDetail({
             merchantId:id
         }).then(res => {
@@ -104,7 +108,6 @@ export default {
           }
         });
       }
-      this.dialogVisible = true;
     },
     addCustomerList(formName) {
        this.$refs[formName].validate((valid) => {

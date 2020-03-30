@@ -1,5 +1,5 @@
 <template>
-  <el-dialog title="开通服务" :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
+  <el-dialog :title="title" :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
     <el-form ref="form" :model="form" label-width="150px">
       <el-form-item label="API服务中文名称：">
         <el-select v-model="value1" multiple placeholder="请选择" @change="selectChange">
@@ -21,6 +21,7 @@
             v-model="form.date"
             type="daterange"
             range-separator="至"
+            value-format="yyyy-MM-dd"
             start-placeholder="开始日期"
             end-placeholder="结束日期"
           ></el-date-picker>
@@ -43,10 +44,11 @@ export default {
   data() {
     return {
       form: {
-        date: []
+        date: [],
       },
       saveNode: "", //存储节点的变量
       value1: [],
+        title:'开通服务',
       tableData: [],
       dialogVisible: false,
       treeData: []
@@ -55,19 +57,19 @@ export default {
   methods: {
     saveForm() {
       console.log(this.form);
-      Bus.$emit("getList");
 
       let checkedKey = this.$refs.tree.getCheckedKeys(true);
       let params = qs.stringify({ ids: checkedKey }, { arrayFormat: "repeat" });
       customerApi
         .generateApiTree({
           merchantId: JSON.parse(localStorage.getItem("userdata")).id,
-          startTime: this.form.date[0],
-          endTime: this.form.date[1],
+          startTime: this.form.date[0]+'T00:00:00.000Z',
+          endTime: this.form.date[1]+'T00:00:00.000Z',
           listApi: checkedKey
         })
         .then(res => {
           if (res.code === 0) {
+            Bus.$emit("getList");//成功了再去调用刷新函数
             this.dialogVisible = false;
             this.$message({
               message: "保存成功",
@@ -98,10 +100,12 @@ export default {
       
       this.$nextTick(()=>{
       this.$refs.tree.setCheckedKeys(checkedKey);
-      this.handleCheckChange();
+       setTimeout(()=>{
+          this.handleCheckChange()
+        },200)
       })
       this.form.date = [startTime, endTime];
-      this.handleCheckChange();
+      // this.handleCheckChange();
     },
     resetForm() {
       resetDataAttr(this, "form");
@@ -111,13 +115,6 @@ export default {
       this.$refs.tree.setCheckedKeys([], true);
       // this.dialogVisible = false;
     },
-    // porcessData(arr) {
-    //   let newstr = "";
-    //   arr.forEach(item => {
-    //     newstr += item + "&";
-    //   });
-    //   return newstr.substr(0, newstr.length - 1);
-    // },
     handleClose(done) {
       this.$confirm("确认关闭？")
         .then(_ => {
@@ -127,10 +124,12 @@ export default {
     },
     openDialog() {
       this.dialogVisible = true;
+      this.title = '开通服务',
       this.setTreeNode();
     },
     editDialog(data) {
       this.dialogVisible = true;
+      this.title = '修改服务',
       this.setTreeNode(true);
     },
     async setTreeNode(arrKey) {

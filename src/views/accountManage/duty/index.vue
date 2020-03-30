@@ -25,8 +25,8 @@
           :default-sort="{ prop: 'date', order: 'descending' }"
         >
           <el-table-column prop="date" label="日期" sortable width="180"></el-table-column>
-          <el-table-column prop="name" label="姓名" sortable width="180"></el-table-column>
-          <el-table-column prop="address" label="地址" :formatter="formatter"></el-table-column>
+          <el-table-column prop="name" label="职称" sortable width="180"></el-table-column>
+          <el-table-column prop="address" label="描述" :formatter="formatter"></el-table-column>
           <el-table-column fixed="right" label="操作" width="400">
             <template slot-scope="scope">
               <el-button @click="add(scope.row)" type="text" icon="el-icon-circle-plus" size="small">添加人员</el-button>
@@ -69,23 +69,23 @@ export default {
       tableData: [
         {
           date: "2016-05-02",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄"
+          name: "处长",
+          address: "这是一个处长"
         },
         {
           date: "2016-05-04",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1517 弄"
+          name: "科长",
+          address: "这是一个科长"
         },
         {
           date: "2016-05-01",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1519 弄"
+          name: "局长",
+          address: "这是一个局长"
         },
         {
           date: "2016-05-03",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1516 弄"
+          name: "县长",
+          address: "这是一个县长"
         }
       ],
       options: [

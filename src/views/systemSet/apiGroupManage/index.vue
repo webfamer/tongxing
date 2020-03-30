@@ -118,7 +118,9 @@ customerApiGroup
         this.getCustomerGroup();
     },
        getCustomerGroup() {
-      console.log(122121);
+         if(this.page.start>1&& this.tableData.length===1){ //如果是最后一条数据，更改请求的当前页
+          this.page.start-=1;
+    }
       customerApiGroup.getApiGroup({
       pageVo:{
         currentPage:this.page.start,

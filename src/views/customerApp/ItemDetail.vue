@@ -13,6 +13,7 @@
           :file-list="fileList"
           :on-success="handlePicSuccess"
           :on-change="handleFile"
+           :before-upload="beforePicUpload"
         >
           <el-button size="small" icon="el-icon-s-goods">选择附件</el-button>
           <div slot="tip" class="el-upload__tip">支持格式：.JGP .PNG 单个文件不能超过20MB</div>
@@ -30,7 +31,7 @@
 import store from "@/store";
 import customerApp from "@/api/custmoerApp";
 import { resetDataAttr } from "@/utils/index.js";
-import { validateChinese } from "@/utils/validate";
+import { validateAppName } from "@/utils/validate";
 export default {
   props: {
     userdata: {
@@ -62,7 +63,7 @@ export default {
             message: "长度在 3 到 10 个字符",
             trigger: "blur"
           },
-          { validator: validateChinese, trigger: "blur" }
+          { validator:validateAppName, trigger: 'blur' }
         ]
       }
     };
@@ -71,10 +72,12 @@ export default {
     saveForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          customerApp
-            .addApp({
-              merchantId: this.userdata.id,
-              ...this.form
+          if(this.form.id){
+        customerApp
+            .eidtApp({
+              appId: this.form.id,
+              ...this.form,
+              status:1
             })
             .then(res => {
               if (res.code === 0) {
@@ -86,6 +89,24 @@ export default {
                 this.$emit("getAppItem");
               }
             });
+          }else{
+          customerApp
+            .addApp({
+              merchantId: this.userdata.id,
+              ...this.form,
+              status:1
+            })
+            .then(res => {
+              if (res.code === 0) {
+                this.$message({
+                  message: "添加成功",
+                  type: "success"
+                });
+                this.dialogVisible = false;
+                this.$emit("getAppItem");
+              }
+            });
+            }
         } else {
           console.log("submit error");
         }
@@ -104,6 +125,21 @@ export default {
       this.fileList = [];
       this.$refs["form"].resetFields();
     },
+
+        beforePicUpload(file) {
+        const isJPG = file.type === 'image/jpeg';
+        const isLt2M = file.size / 1024 / 1024 < 10;
+
+        if (!isJPG) {
+          this.$message.error('上传图片只能是 JPG,PNG 格式!');
+           this.fileList =[];//清空图片列表
+        }
+        if (!isLt2M) {
+          this.$message.error('上传图片大小不能超过 10MB!');
+           this.fileList =[];//清空图片列表
+        }
+        return isJPG && isLt2M;
+      },
     handleClose(done) {
       this.$confirm("确认关闭？")
         .then(_ => {
@@ -112,18 +148,22 @@ export default {
         .catch(_ => {});
     },
     openDialog(data) {
-      if (data) {
+
+      this.dialogVisible = true;
+      this.$nextTick(() => {
+        this.$refs["form"].resetFields();
+        this.fileList = []
+        resetDataAttr(this, "form");
+      });
+            if (data) {
         this.$nextTick(res => {
-          this.form = data;
+          this.form = JSON.parse(JSON.stringify(data));
+          this.fileList.push({url:data.picUrl})
+          this.fileList = this.fileList.slice(-1);
         });
         // console.log(this.form,'传递过来的数据')
         // this.form.appChiName = "panshi"
       }
-      this.dialogVisible = true;
-      this.$nextTick(() => {
-        this.$refs["form"].resetFields();
-        resetDataAttr(this, "form");
-      });
     },
     editDialog(data) {
       this.dialogVisible = true;

@@ -48,6 +48,7 @@ module.exports = {
       }
   }
   // 192.168.40.151
+  // 10.0.53.94 闫东升
     // before: require('./mock/mock-server.js')
   },
   configureWebpack: {

@@ -7,8 +7,8 @@
     >
       <el-table-column prop="apiChiName" label="服务名称" sortable ></el-table-column>
       <el-table-column prop="status" label="服务状态" sortable  :formatter="formatter"></el-table-column>
-      <el-table-column prop="startTime" label="开始时间"></el-table-column>
-      <el-table-column prop="endTime" label="结束时间"></el-table-column>
+      <el-table-column prop="startTime" label="开始时间" :formatter="formatterStartTime"></el-table-column>
+      <el-table-column prop="endTime" label="结束时间" :formatter="formatterEndTime"></el-table-column>
     </el-table>
   </div>
 </template>
@@ -36,7 +36,6 @@ export default {
     getlist(){
       this.$nextTick(()=>{
      this.getapiList();
-
       })
     },
     formatter(row){
@@ -45,7 +44,17 @@ export default {
       }else{
         return '已过期'
       }
-    } 
+    },
+    formatterStartTime(row){
+      if(row.startTime){
+        return row.startTime.substr(0,10)
+      }
+    },
+      formatterEndTime(row){
+      if(row.endTime){
+        return row.endTime.substr(0,10)
+      }
+    }
   },
   mounted(){
     Bus.$on('getList',()=>{

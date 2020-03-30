@@ -68,19 +68,20 @@ export default {
     getlist(){
       console.log(this.$children)
     },
-    getapiList() {
-      customerApi
-        .getCustomerApi({
-          //获取列表数据拿到选中的值
-          merhcant: {
-            merchantId: this.userData.id
-          }
-        })
-        .then(res => {
-          this.treeKeyData = this.processData(res.data);
-          console.log(this.treeKeyData, "获取节点值");
-        });
-    },
+    // getapiList() {   
+    //   // 把拿到的数据遍历，然后把id组成一个新数组
+    //   customerApi
+    //     .getCustomerApi({
+    //       //获取列表数据拿到选中的值
+    //       merhcant: {
+    //         merchantId: this.userData.id
+    //       }
+    //     })
+    //     .then(res => {
+    //       this.treeKeyData = this.processData(res.data);
+    //       console.log(this.treeKeyData, "获取节点值");
+    //     });
+    // },
     processData(data) {
       var newarr = [];
       data.forEach(item => {
@@ -99,7 +100,7 @@ export default {
     }
   },
   mounted() {
-    this.getapiList();
+    // this.getapiList();
   },
   components: {
     Detail

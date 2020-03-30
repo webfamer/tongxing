@@ -1,5 +1,5 @@
 <template>
-  <el-dialog title="新增API服务" :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
+  <el-dialog :title="title" :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
     <el-form ref="form" :rules="formRules" :model="form" label-width="160px">
       <el-form-item label="API服务中文名称：" prop="apiChiName">
         <el-input v-model="form.apiChiName"></el-input>
@@ -30,7 +30,7 @@
     </el-form>
     <span slot="footer" class="dialog-footer">
       <el-button type="primary" @click="saveForm('form')" icon="el-icon-check">提交</el-button>
-      <el-button @click="resetform" icon="el-icon-refresh-right">重置</el-button>
+      <el-button @click="resetForm" icon="el-icon-refresh-right">重置</el-button>
     </span>
   </el-dialog>
 </template>
@@ -49,6 +49,7 @@ export default {
       form: {},
       dialogVisible: false,
       treeData: [],
+      title:"新增API服务",
       value1: [],
       formRules: {
         apiChiName: [
@@ -62,17 +63,17 @@ export default {
           { validator: validateChinese, trigger: "blur" }
         ],
         apiEngName: [
-          { required: true, message: "请输入活动名称", trigger: "blur" },
+          { required: true, message: "请输入英文名称", trigger: "blur" },
           {
-            min: 3,
-            max: 10,
-            message: "长度在 3 到 10 个字符",
+            min: 2,
+            max: 20,
+            message: "长度在 2 到 20 个字符",
             trigger: "blur"
           },
           { validator: validateEnglish, trigger: "blur" }
         ],
         apiPath: [
-          { required: true, message: "请输入活动名称", trigger: "blur" },
+          { required: true, message: "请输入正确格式路径", trigger: "blur" },
           { validator: validateApi, trigger: "blur" }
         ],
         remark: [
@@ -91,24 +92,18 @@ export default {
         .catch(_ => {});
     },
     openDialog(data) {
-
-      //  this.$nextTick(()=>{
-      //    this.$refs['form'].resetFields();
-      // resetDataAttr(this, "form");
-      // })
-      // this.$nextTick(res => {
-      //   this.$refs.tree.setCheckedKeys([]);
-      // });
-      if (data) {
-        this.form = data;
-        this.setTreeNode([data.groupId]);
-      }else{
-      resetDataAttr(this, "form");
-       this.$refs['form'].resetFields();
-       this.setTreeNode();
-      }
       this.dialogVisible = true;
-      this.getTreeNode();
+       if(this.$refs['form']){  //不论是新增或编辑，打开弹窗时都要重置校验错误提示
+        this.$refs["form"].resetFields();
+        }
+      if (data) {
+        this.form = JSON.parse(JSON.stringify(data));
+        this.title="修改API服务" //切换弹窗标题
+        this.setTreeNode([data.groupId]);
+      } else {
+        resetDataAttr(this, "form");
+        this.setTreeNode();
+      }
       console.log(this.form, "this.form");
     },
     getTreeNode() {
@@ -117,32 +112,30 @@ export default {
         this.treeData = res.data;
       });
     },
-     async setTreeNode(arrKey){
-       await this.getTreeNode();
-       if(arrKey){
-          this.$refs.tree.setCheckedKeys(arrKey);
-          this.value1 = arrKey
-       }else{
+    async setTreeNode(arrKey) {
+      await this.getTreeNode();
+      if (arrKey) {
+        this.$refs.tree.setCheckedKeys(arrKey);
+        setTimeout(()=>{
+          this.handleCheckChange()
+        },200)
+      } else {
         this.$refs.tree.setCheckedKeys([]);
-        this.value1 =[]
-       }
-    },
-    resetform() {
-      resetDataAttr(this, "form");
-    },
-    handleCheckChange(data) {
-      let treeNode = this.$refs.tree.getCheckedNodes(true, true);
-      if (treeNode.length > 1) {
-        this.$refs.tree.setCheckedKeys([data.id]);
+        this.value1 = [];
       }
-      console.log(treeNode, "haa");
+    },
+    handleCheckChange(data,checked,node) {
+      console.log(checked,data)
+      let treeNode = this.$refs.tree.getCheckedNodes(true, true);
+      if (checked) {
+        this.$refs.tree.setCheckedNodes([data]);
+      }
       let arrNode = [];
       let arrlabel = [];
       treeNode.forEach(item => {
         arrlabel.push(item.label);
         arrNode.push(item);
       });
-      console.log(treeNode);
       this.value1 = arrlabel;
       this.saveNode = arrNode;
     },
@@ -158,55 +151,63 @@ export default {
       console.log(newarr, "saveNode");
       this.$refs.tree.setCheckedNodes(newarr);
     },
+        resetForm() {
+      resetDataAttr(this, "form");
+      this.$nextTick(()=>{
+      this.value1 = [];
+      })
+      this.$refs.tree.setCheckedKeys([], true);
+      // this.dialogVisible = false;
+    },
     saveForm(formName) {
       console.log(111);
       let groupId = this.$refs.tree.getCheckedKeys()[0];
-       this.$refs[formName].validate((valid) => {
-     if (valid) {
-      if (this.form.id) {
-        //编辑的调用
-        customerApiList
-          .editApi({
-            ...this.form,
-            groupId: groupId
-          })
-          .then(res => {
-            if (res.code === 0) {
-              this.dialogVisible = false;
-              this.$message({
-                message: "保存成功",
-                type: "success"
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          if (this.form.id) {
+            //编辑的调用
+            customerApiList
+              .editApi({
+                ...this.form,
+                groupId: groupId
+              })
+              .then(res => {
+                if (res.code === 0) {
+                  this.dialogVisible = false;
+                  this.$message({
+                    message: "保存成功",
+                    type: "success"
+                  });
+                  this.$emit("getList");
+                } else {
+                  this.$message.error(res.msg);
+                }
               });
-              this.$emit("getList");
-            } else {
-              this.$message.error(res.msg);
-            }
-          });
-      } else {
-        //新增的调用
-        customerApiList
-          .addApi({
-            ...this.form,
-            groupId: groupId
-          })
-          .then(res => {
-            if (res.code === 0) {
-              this.dialogVisible = false;
-              this.$message({
-                message: "保存成功",
-                type: "success"
+          } else {
+            //新增的调用
+            customerApiList
+              .addApi({
+                ...this.form,
+                groupId: groupId
+              })
+              .then(res => {
+                if (res.code === 0) {
+                  this.dialogVisible = false;
+                  this.$message({
+                    message: "保存成功",
+                    type: "success"
+                  });
+                  this.$emit("getList");
+                } else {
+                  this.$message.error(res.msg);
+                }
               });
-              this.$emit("getList");
-            } else {
-              this.$message.error(res.msg);
-            }
-          });
-      }
-       } else {
-            console.log('error submit!!');
-            return false;
           }
-        });
+        } else {
+          console.log("error submit!!");
+          return false;
+        }
+      });
     }
   }
 };
@@ -216,16 +217,16 @@ export default {
 .el-select {
   width: 100%;
 }
-/deep/#testTree {
-  .el-checkbox .el-checkbox__inner {
-    display: none;
-  }
-  div[role="group"] {
-    .el-checkbox .el-checkbox__inner {
-      display: inline-block;
-    }
-  }
-}
+// /deep/#testTree {
+//   .el-checkbox .el-checkbox__inner {
+//     display: none;
+//   }
+//   div[role="group"] {
+//     .el-checkbox .el-checkbox__inner {
+//       display: inline-block;
+//     }
+//   }
+// }
 </style>>
 
 </style>

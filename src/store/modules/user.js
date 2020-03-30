@@ -1,12 +1,13 @@
 import { login, logout, getInfo } from "@/api/user";
-import { getToken, setToken, removeToken } from "@/utils/auth";
+import { getToken, setToken, removeToken, getRefreshToken, setRefreshToken,removeRefreshToken } from "@/utils/auth";
 import { resetRouter } from "@/router";
 
 const getDefaultState = () => {
   return {
     token: getToken(),
+    refreshToken: getRefreshToken(),
     name: "",
-    avatar: "",
+    avatar: ""
   };
 };
 
@@ -18,6 +19,9 @@ const mutations = {
   },
   SET_TOKEN: (state, token) => {
     state.token = token;
+  },
+  SET_REFRESHTOKEN: (state, refreshToken) => {
+    state.refreshToken = refreshToken;
   },
   SET_NAME: (state, name) => {
     state.name = name;
@@ -40,11 +44,11 @@ const actions = {
         client_id: username,
         client_secret: password
       }).then(response => {
-  console.log(11)
-
           const  data  = response;
           commit("SET_TOKEN", data.access_token);
           setToken(data.access_token);
+          commit("SET_REFRESHTOKEN", data.refresh_token);
+          setRefreshToken(data.refresh_token)
           resolve();
         })
         .catch(error => {
@@ -53,16 +57,15 @@ const actions = {
     });
   },
 
-  refreshAuth({ commit }, userInfo) {  //用refreshToken去请求新token
-    const { username, password } = userInfo;
+  refreshAuth({ commit }) {  //用refreshToken去请求新token
+    // const { username, password } = userInfo;
     return new Promise((resolve, reject) => {
       login({
-        username: username.trim(),
-        password: password,
         grant_type: "refresh_token",
+        refresh_token:state.refreshToken,
         scope: "all",
-        client_id: username,
-        client_secret: password
+        client_id: 'admin',
+        client_secret: '123456'
       }).then(response => {
   console.log(11)
 
@@ -115,6 +118,7 @@ const actions = {
     //     });
     // });
     removeToken(); // must remove  token  first
+    removeRefreshToken(); //同时清除refreshtoken
     resetRouter();
     commit("RESET_STATE");
   },
